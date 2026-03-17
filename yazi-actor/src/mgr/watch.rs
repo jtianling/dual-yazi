@@ -17,7 +17,7 @@ impl Actor for Watch {
 	fn act(cx: &mut Ctx, _: Self::Options) -> Result<Data> {
 		let tabs = &cx.core.mgr.tabs;
 		let it = tabs
-			.iter()
+			.all_tabs()
 			.flat_map(|t| {
 				iter::once(t.cwd()).chain(t.parent.as_ref().map(|p| &p.url))
 			})

@@ -17,37 +17,52 @@ impl Actor for UpdateFiles {
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
 		let linked: Vec<_> = LINKED.read().from_dir(opt.op.cwd()).map(|u| opt.op.chdir(u)).collect();
-		let tab_count = cx.mgr.tabs.len();
-		let saved = cx.tab;
+		let saved_pane = cx.pane;
+		let saved_tab = cx.tab;
 
-		let mut revisions = Vec::with_capacity(tab_count);
-		for i in 0..tab_count {
-			cx.tab = i;
-			revisions.push(cx.current().files.revision);
+		let mut revisions = Vec::new();
+		for p in 0..2 {
+			cx.pane = p;
+			let tab_count = cx.mgr.tabs.panes[p].len();
+			for t in 0..tab_count {
+				cx.tab = t;
+				revisions.push((p, t, cx.current().files.revision));
+			}
 		}
 
 		for op in [opt.op].into_iter().chain(linked) {
 			cx.mgr.yanked.apply_op(&op);
-			for i in 0..tab_count {
-				cx.tab = i;
-				Self::update_tab(cx, op.clone()).ok();
+			for p in 0..2 {
+				cx.pane = p;
+				let tab_count = cx.mgr.tabs.panes[p].len();
+				for t in 0..tab_count {
+					cx.tab = t;
+					Self::update_tab(cx, op.clone()).ok();
+				}
 			}
 		}
 
 		render!(cx.mgr.yanked.catchup_revision(false));
 
-		for i in 0..tab_count {
-			cx.tab = i;
+		for &(p, t, old_rev) in &revisions {
+			cx.pane = p;
+			cx.tab = t;
 			act!(mgr:hidden, cx).ok();
 			act!(mgr:sort, cx).ok();
-			if revisions[i] != cx.current().files.revision {
+			if old_rev != cx.current().files.revision {
 				act!(mgr:hover, cx)?;
 				act!(mgr:update_paged, cx)?;
 			}
 		}
 
-		cx.tab = saved;
-		if revisions[saved] != cx.current().files.revision {
+		cx.pane = saved_pane;
+		cx.tab = saved_tab;
+		if cx.current().files.revision
+			!= revisions
+				.iter()
+				.find(|&&(p, t, _)| p == saved_pane && t == saved_tab)
+				.map_or(0, |&(_, _, r)| r)
+		{
 			act!(mgr:peek, cx)?;
 			act!(mgr:watch, cx)?;
 		}

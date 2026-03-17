@@ -13,8 +13,9 @@ impl Actor for Close {
 	const NAME: &str = "close";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		if cx.tabs().len() > 1 {
-			act!(mgr:tab_close, cx, cx.tabs().cursor)
+		let pane = cx.tabs().active_pane_ref();
+		if pane.len() > 1 {
+			act!(mgr:tab_close, cx, pane.cursor)
 		} else {
 			act!(mgr:quit, cx, opt.0)
 		}

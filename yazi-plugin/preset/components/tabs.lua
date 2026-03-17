@@ -3,16 +3,19 @@ Tabs = {
 	_offsets = {},
 }
 
-function Tabs:new(area)
+function Tabs:new(area, pane)
 	return setmetatable({
 		_area = area,
+		_pane = pane,
 	}, { __index = self })
 end
 
 function Tabs:reflow() return { self } end
 
 function Tabs:redraw()
-	if self.height() < 1 then
+	local tabs = self._pane or cx.tabs
+	local count = #tabs
+	if count < 2 then
 		return {}
 	end
 
@@ -21,10 +24,10 @@ function Tabs:redraw()
 	}
 
 	local pos = lines[1]:width()
-	local max = math.floor(self:inner_width() / #cx.tabs)
-	for i = 1, #cx.tabs do
-		local name = ui.truncate(string.format(" %d %s ", i, cx.tabs[i].name), { max = max })
-		if i == cx.tabs.idx then
+	local max = math.floor(self:inner_width() / count)
+	for i = 1, count do
+		local name = ui.truncate(string.format(" %d %s ", i, tabs[i].name), { max = max })
+		if i == tabs.idx then
 			lines[#lines + 1] = ui.Line {
 				ui.Span(th.tabs.sep_inner.open):style(th.tabs.inactive),
 				ui.Span(name):style(th.tabs.active),
@@ -40,7 +43,10 @@ function Tabs:redraw()
 	return ui.Line(lines):area(self._area)
 end
 
-function Tabs.height() return #cx.tabs > 1 and 1 or 0 end
+function Tabs.height(pane)
+	local tabs = pane or cx.tabs
+	return #tabs > 1 and 1 or 0
+end
 
 function Tabs:inner_width()
 	local si, so = th.tabs.sep_inner, th.tabs.sep_outer
@@ -52,7 +58,8 @@ function Tabs:click(event, up)
 	if up or event.is_middle then
 		return
 	end
-	for i = #cx.tabs, 1, -1 do
+	local tabs = self._pane or cx.tabs
+	for i = #tabs, 1, -1 do
 		if event.x >= self._offsets[i] then
 			ya.emit("tab_switch", { i - 1 })
 			break

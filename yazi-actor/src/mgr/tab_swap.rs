@@ -14,21 +14,17 @@ impl Actor for TabSwap {
 	const NAME: &str = "tab_swap";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		if cx.tabs().len() == 2 {
+		let pane = cx.tabs_mut().active_pane_mut();
+
+		let new = opt.step.add(pane.cursor, pane.len(), 0);
+		if new == pane.cursor {
 			succ!();
 		}
 
-		let tabs = cx.tabs_mut();
+		pane.items.swap(pane.cursor, new);
+		pane.cursor = new;
 
-		let new = opt.step.add(tabs.cursor, tabs.len(), 0);
-		if new == tabs.cursor {
-			succ!();
-		}
-
-		tabs.items.swap(tabs.cursor, new);
-		tabs.cursor = new;
-
-		err!(Pubsub::pub_after_tab(cx.active().id));
+		err!(Pubsub::pub_after_tab(cx.tabs().active().id));
 		succ!(render!());
 	}
 }

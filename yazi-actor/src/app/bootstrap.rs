@@ -15,23 +15,32 @@ impl Actor for Bootstrap {
 	const NAME: &str = "bootstrap";
 
 	fn act(cx: &mut Ctx, _: Self::Options) -> Result<Data> {
-		let count = BOOT.files.len().max(2);
-		cx.mgr.tabs.resize_with(count, Default::default);
-
-		for (i, file) in BOOT.files.iter().enumerate().rev() {
-			cx.tab = i;
+		cx.pane = 0;
+		cx.tab = 0;
+		if let Some(file) = BOOT.files.first() {
 			if file.is_empty() {
-				act!(mgr:cd, cx, (BOOT.cwds[i].clone(), CdSource::Tab))?;
-			} else if let Ok(u) = BOOT.cwds[i].try_join(file) {
+				act!(mgr:cd, cx, (BOOT.cwds[0].clone(), CdSource::Tab))?;
+			} else if let Ok(u) = BOOT.cwds[0].try_join(file) {
 				act!(mgr:reveal, cx, (u, CdSource::Tab))?;
 			}
-		}
-
-		if BOOT.files.len() < 2 {
-			cx.tab = 1;
+		} else {
 			act!(mgr:cd, cx, (BOOT.cwds[0].clone(), CdSource::Tab))?;
 		}
 
+		cx.pane = 1;
+		cx.tab = 0;
+		if BOOT.files.len() >= 2 {
+			let file = &BOOT.files[1];
+			if file.is_empty() {
+				act!(mgr:cd, cx, (BOOT.cwds[1].clone(), CdSource::Tab))?;
+			} else if let Ok(u) = BOOT.cwds[1].try_join(file) {
+				act!(mgr:reveal, cx, (u, CdSource::Tab))?;
+			}
+		} else {
+			act!(mgr:cd, cx, (BOOT.cwds[0].clone(), CdSource::Tab))?;
+		}
+
+		cx.pane = 0;
 		cx.tab = 0;
 		succ!();
 	}

@@ -12,10 +12,12 @@ end
 
 function Root:layout()
 	if cx.tabs.single_pane then
+		local pane = cx.tabs:pane(cx.tabs.idx)
 		self._chunks = ui.Layout()
 			:direction(ui.Layout.VERTICAL)
 			:constraints({
 				ui.Constraint.Length(1),
+				ui.Constraint.Length(Tabs.height(pane)),
 				ui.Constraint.Fill(1),
 				ui.Constraint.Length(1),
 			})
@@ -32,11 +34,11 @@ end
 
 function Root:build()
 	if cx.tabs.single_pane then
-		local main = Tab:new(self._chunks[2], cx.active)
 		self._children = {
 			Header:new(self._chunks[1], cx.active),
-			main,
-			Status:new(self._chunks[3], cx.active),
+			Tabs:new(self._chunks[2], cx.tabs:pane(cx.tabs.idx)),
+			Tab:new(self._chunks[3], cx.active),
+			Status:new(self._chunks[4], cx.active),
 			Modal:new(self._area),
 		}
 	else

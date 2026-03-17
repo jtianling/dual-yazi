@@ -17,11 +17,8 @@ impl Actor for TabCreate {
 	const NAME: &str = "tab_create";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		if cx.tabs().len() == 2 {
-			succ!();
-		}
-
-		if cx.tabs().len() >= MAX_TABS {
+		let pane = &cx.mgr.tabs.panes[cx.pane];
+		if pane.len() >= MAX_TABS {
 			succ!(NotifyProxy::push_warn(
 				"Too many tabs",
 				"You can only open up to 9 tabs at the same time."
@@ -45,9 +42,9 @@ impl Actor for TabCreate {
 			(true, tab.cwd().to_regular()?)
 		};
 
-		let tabs = &mut cx.mgr.tabs;
-		tabs.items.insert(tabs.cursor + 1, tab);
-		tabs.set_idx(tabs.cursor + 1);
+		let pane = cx.tabs_mut().active_pane_mut();
+		pane.items.insert(pane.cursor + 1, tab);
+		pane.set_idx(pane.cursor + 1);
 
 		let cx = &mut Ctx::renew(cx);
 		if cd {

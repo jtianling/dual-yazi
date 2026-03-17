@@ -13,14 +13,13 @@ impl Actor for PaneSwitch {
 	const NAME: &str = "pane_switch";
 
 	fn act(cx: &mut Ctx, _: Self::Options) -> Result<Data> {
-		let tabs = cx.tabs_mut();
-		let idx = match tabs.cursor {
+		let idx = match cx.tabs().active_pane {
 			0 => 1,
 			1 => 0,
 			_ => succ!(),
 		};
 
-		tabs.set_idx(idx);
+		cx.tabs_mut().set_active_pane(idx);
 		let cx = &mut Ctx::renew(cx);
 
 		act!(mgr:refresh, cx)?;

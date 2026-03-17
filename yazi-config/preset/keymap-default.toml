@@ -9,6 +9,7 @@ keymap = [
 	{ on = "<C-[>", run = "escape",             desc = "Exit visual mode, clear selection, or cancel search" },
 	{ on = "q",     run = "quit",               desc = "Quit the process" },
 	{ on = "Q",     run = "quit --no-cwd-file", desc = "Quit without outputting cwd-file" },
+	{ on = "<C-c>", run = "close",              desc = "Close the current tab, or quit if it's last" },
 	{ on = "<C-z>", run = "suspend",            desc = "Suspend the process" },
 
 	# Hopping
@@ -59,9 +60,29 @@ keymap = [
 	{ on = [ "<C-w>", "w" ],     run = "pane_switch",        desc = "Switch to the other pane" },
 	{ on = [ "<C-w>", "<C-w>" ], run = "pane_switch",        desc = "Switch to the other pane" },
 	{ on = [ "<C-w>", "h" ],     run = "pane_focus --left",  desc = "Focus the left pane" },
-	{ on = [ "<C-w>", "l" ],     run = "pane_focus --right", desc = "Focus the right pane" },
+	{ on = [ "<C-w>", "l" ],     run = "pane_focus",         desc = "Focus the right pane" },
 	{ on = [ "<C-w>", "o" ],     run = "pane_only",          desc = "Toggle single/dual pane" },
 	{ on = [ "<C-w>", "p" ],     run = "pane_preview",       desc = "Toggle preview in dual pane" },
+
+	# Tabs
+	{ on = [ "t", "t" ], run = "tab_create --current",     desc = "Create a new tab in CWD" },
+	{ on = [ "t", "r" ], run = "tab_rename --interactive", desc = "Rename current tab" },
+
+	{ on = "1", run = "tab_switch 0", desc = "Switch to first tab" },
+	{ on = "2", run = "tab_switch 1", desc = "Switch to second tab" },
+	{ on = "3", run = "tab_switch 2", desc = "Switch to third tab" },
+	{ on = "4", run = "tab_switch 3", desc = "Switch to fourth tab" },
+	{ on = "5", run = "tab_switch 4", desc = "Switch to fifth tab" },
+	{ on = "6", run = "tab_switch 5", desc = "Switch to sixth tab" },
+	{ on = "7", run = "tab_switch 6", desc = "Switch to seventh tab" },
+	{ on = "8", run = "tab_switch 7", desc = "Switch to eighth tab" },
+	{ on = "9", run = "tab_switch 8", desc = "Switch to ninth tab" },
+
+	{ on = "[", run = "tab_switch -1 --relative", desc = "Switch to previous tab" },
+	{ on = "]", run = "tab_switch 1 --relative",  desc = "Switch to next tab" },
+
+	{ on = "{", run = "tab_swap -1", desc = "Swap current tab with previous tab" },
+	{ on = "}", run = "tab_swap 1",  desc = "Swap current tab with next tab" },
 
 	# Operation
 	{ on = "o",         run = "open",                        desc = "Open selected files" },
@@ -138,6 +159,7 @@ keymap = [
 	{ on = [ "g", "d" ],       run = "cd ~/Downloads",   desc = "Go ~/Downloads" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 	{ on = [ "g", "f" ],       run = "follow",           desc = "Follow hovered symlink" },
+	{ on = "<C-g>",            run = "cd --interactive", desc = "Go to folder" },
 
 	# Tasks
 	{ on = "w", run = "tasks:show", desc = "Show task manager" },

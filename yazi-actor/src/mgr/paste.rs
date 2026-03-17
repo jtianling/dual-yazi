@@ -14,13 +14,13 @@ impl Actor for Paste {
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
 		let mgr = &mut cx.core.mgr;
-		let tab = &mgr.tabs[cx.tab];
+		let tab = &mgr.tabs.panes[cx.pane].items[cx.tab];
 
 		let dest = tab.cwd();
 		if mgr.yanked.cut {
 			cx.core.tasks.file_cut(&mgr.yanked, dest, opt.force);
 
-			mgr.tabs.iter_mut().for_each(|t| _ = t.selected.remove_many(mgr.yanked.iter()));
+			mgr.tabs.all_tabs_mut().for_each(|t| _ = t.selected.remove_many(mgr.yanked.iter()));
 			act!(mgr:unyank, cx)
 		} else {
 			succ!(cx.core.tasks.file_copy(&mgr.yanked, dest, opt.force, opt.follow));

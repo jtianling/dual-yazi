@@ -13,14 +13,13 @@ impl Actor for PaneFocus {
 	const NAME: &str = "pane_focus";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		let tabs = cx.tabs_mut();
 		let idx = (!opt.left) as usize;
 
-		if idx == tabs.cursor || idx >= tabs.len() {
+		if idx == cx.tabs().active_pane {
 			succ!();
 		}
 
-		tabs.set_idx(idx);
+		cx.tabs_mut().set_active_pane(idx);
 		let cx = &mut Ctx::renew(cx);
 
 		act!(mgr:refresh, cx)?;

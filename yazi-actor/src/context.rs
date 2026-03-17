@@ -9,6 +9,7 @@ use yazi_term::Term;
 pub struct Ctx<'a> {
 	pub core:      &'a mut Core,
 	pub term:      &'a mut Option<Term>,
+	pub pane:      usize,
 	pub tab:       usize,
 	pub level:     usize,
 	pub source:    Source,
@@ -29,20 +30,21 @@ impl DerefMut for Ctx<'_> {
 impl<'a> Ctx<'a> {
 	#[inline]
 	pub fn new(action: &Action, core: &'a mut Core, term: &'a mut Option<Term>) -> Result<Self> {
-		let tab = if let Ok(id) = action.get::<Id>("tab") {
+		let (pane, tab) = if let Ok(id) = action.get::<Id>("tab") {
 			core
 				.mgr
 				.tabs
-				.iter()
-				.position(|t| t.id == id)
+				.find_tab(id)
 				.ok_or_else(|| anyhow!("Tab with id {id} not found"))?
 		} else {
-			core.mgr.tabs.cursor
+			let p = core.mgr.tabs.active_pane;
+			(p, core.mgr.tabs.panes[p].cursor)
 		};
 
 		Ok(Self {
 			core,
 			term,
+			pane,
 			tab,
 			level: 0,
 			source: action.source,
@@ -53,10 +55,12 @@ impl<'a> Ctx<'a> {
 
 	#[inline]
 	pub fn renew<'b>(cx: &'a mut Ctx<'b>) -> Self {
-		let tab = cx.core.mgr.tabs.cursor;
+		let p = cx.core.mgr.tabs.active_pane;
+		let tab = cx.core.mgr.tabs.panes[p].cursor;
 		Self {
 			core: cx.core,
 			term: cx.term,
+			pane: p,
 			tab,
 			level: cx.level,
 			source: cx.source,
@@ -67,10 +71,12 @@ impl<'a> Ctx<'a> {
 
 	#[inline]
 	pub fn active(core: &'a mut Core, term: &'a mut Option<Term>) -> Self {
-		let tab = core.mgr.tabs.cursor;
+		let p = core.mgr.tabs.active_pane;
+		let tab = core.mgr.tabs.panes[p].cursor;
 		Self {
 			core,
 			term,
+			pane: p,
 			tab,
 			level: 0,
 			source: Source::Unknown,
@@ -88,10 +94,12 @@ impl<'a> Ctx<'a> {
 	pub fn tabs_mut(&mut self) -> &mut Tabs { &mut self.mgr.tabs }
 
 	#[inline]
-	pub fn tab(&self) -> &Tab { &self.tabs()[self.tab] }
+	pub fn tab(&self) -> &Tab { &self.mgr.tabs.panes[self.pane].items[self.tab] }
 
 	#[inline]
-	pub fn tab_mut(&mut self) -> &mut Tab { &mut self.core.mgr.tabs[self.tab] }
+	pub fn tab_mut(&mut self) -> &mut Tab {
+		&mut self.core.mgr.tabs.panes[self.pane].items[self.tab]
+	}
 
 	#[inline]
 	pub fn cwd(&self) -> &UrlBuf { self.tab().cwd() }

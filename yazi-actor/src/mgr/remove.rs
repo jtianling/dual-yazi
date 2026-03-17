@@ -55,7 +55,7 @@ impl Actor for RemoveDo {
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
 		let mgr = &mut cx.mgr;
 
-		mgr.tabs.iter_mut().for_each(|t| {
+		mgr.tabs.all_tabs_mut().for_each(|t| {
 			t.selected.remove_many(&opt.targets);
 		});
 

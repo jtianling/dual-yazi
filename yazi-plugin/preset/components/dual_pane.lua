@@ -19,18 +19,26 @@ function DualPane:layout()
 		})
 		:split(self._area)
 
-	local pane_constraints = {
-		ui.Constraint.Length(1),
-		ui.Constraint.Fill(1),
-		ui.Constraint.Length(1),
-	}
+	local left_pane = cx.tabs:pane(1)
+	local right_pane = cx.tabs:pane(2)
+
 	self._left_chunks = ui.Layout()
 		:direction(ui.Layout.VERTICAL)
-		:constraints(pane_constraints)
+		:constraints({
+			ui.Constraint.Length(1),
+			ui.Constraint.Length(Tabs.height(left_pane)),
+			ui.Constraint.Fill(1),
+			ui.Constraint.Length(1),
+		})
 		:split(self._chunks[1])
 	self._right_chunks = ui.Layout()
 		:direction(ui.Layout.VERTICAL)
-		:constraints(pane_constraints)
+		:constraints({
+			ui.Constraint.Length(1),
+			ui.Constraint.Length(Tabs.height(right_pane)),
+			ui.Constraint.Fill(1),
+			ui.Constraint.Length(1),
+		})
 		:split(self._chunks[3])
 end
 
@@ -49,11 +57,13 @@ function DualPane:build()
 	}
 	self._children = {
 		Header:new(self._left_chunks[1], cx.tabs[1]),
-		Tab:new(self._left_chunks[2], cx.tabs[1], cx.tabs.idx == 1, ratio),
-		Status:new(self._left_chunks[3], cx.tabs[1]),
+		Tabs:new(self._left_chunks[2], cx.tabs:pane(1)),
+		Tab:new(self._left_chunks[3], cx.tabs[1], cx.tabs.idx == 1, ratio),
+		Status:new(self._left_chunks[4], cx.tabs[1]),
 		Header:new(self._right_chunks[1], cx.tabs[2]),
-		Tab:new(self._right_chunks[2], cx.tabs[2], cx.tabs.idx == 2, ratio),
-		Status:new(self._right_chunks[3], cx.tabs[2]),
+		Tabs:new(self._right_chunks[2], cx.tabs:pane(2)),
+		Tab:new(self._right_chunks[3], cx.tabs[2], cx.tabs.idx == 2, ratio),
+		Status:new(self._right_chunks[4], cx.tabs[2]),
 	}
 end
 

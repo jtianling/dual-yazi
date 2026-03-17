@@ -38,7 +38,7 @@ impl Mgr {
 	}
 
 	pub fn shutdown(&mut self) {
-		self.tabs.iter_mut().for_each(|t| t.shutdown());
+		self.tabs.all_tabs_mut().for_each(|t| t.shutdown());
 	}
 }
 
@@ -71,15 +71,15 @@ impl Mgr {
 
 impl Splatable for Mgr {
 	fn tab(&self) -> usize {
-		self.tabs.cursor
+		self.tabs.active_pane
 	}
 
 	fn selected(&self, tab: usize, mut idx: Option<usize>) -> impl Iterator<Item = Url<'_>> {
 		idx = idx.and_then(|i| i.checked_sub(1));
 		tab
 			.checked_sub(1)
-			.and_then(|tab| self.tabs.get(tab))
-			.map(|tab| tab.selected_or_hovered())
+			.and_then(|p| self.tabs.panes.get(p))
+			.map(|pane| pane.active().selected_or_hovered())
 			.unwrap_or_else(|| Box::new(iter::empty()))
 			.skip(idx.unwrap_or(0))
 			.take(if idx.is_some() { 1 } else { usize::MAX })
@@ -89,8 +89,8 @@ impl Splatable for Mgr {
 	fn hovered(&self, tab: usize) -> Option<Url<'_>> {
 		tab
 			.checked_sub(1)
-			.and_then(|tab| self.tabs.get(tab))
-			.and_then(|tab| tab.hovered())
+			.and_then(|p| self.tabs.panes.get(p))
+			.and_then(|pane| pane.active().hovered())
 			.map(|h| h.url.as_url())
 	}
 

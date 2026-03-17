@@ -42,7 +42,7 @@ impl Actor for Sort {
 		{
 			act!(mgr:hover, cx)?;
 			act!(mgr:update_paged, cx)?;
-			cx.tasks.prework_sorted(&cx.mgr.tabs[cx.tab].current.files);
+			cx.tasks.prework_sorted(&cx.mgr.tabs.panes[cx.pane].items[cx.tab].current.files);
 		}
 
 		// Apply to hovered

@@ -26,10 +26,12 @@ impl Widget for Preview<'_> {
 
 		if self.core.mgr.tabs.preview_pane && !self.core.mgr.tabs.single_pane {
 			if let Some(lock) = &self.core.mgr.tabs.other().preview.lock {
-				for w in &lock.data {
-					let rect = w.area().transform(|p| self.core.mgr.area(p));
-					if rect.intersection(win) == rect {
-						w.render(rect, buf);
+				if lock.area.intersection(win) == *lock.area {
+					for w in &lock.data {
+						let rect = w.area().transform(|p| self.core.mgr.area(p));
+						if rect.intersection(win) == rect {
+							w.render(rect, buf);
+						}
 					}
 				}
 			}

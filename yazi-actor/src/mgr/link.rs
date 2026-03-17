@@ -14,7 +14,7 @@ impl Actor for Link {
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
 		let mgr = &mut cx.core.mgr;
-		let tab = &mgr.tabs[cx.tab];
+		let tab = &mgr.tabs.panes[cx.pane].items[cx.tab];
 
 		if !mgr.yanked.cut {
 			cx.core.tasks.file_link(&mgr.yanked, tab.cwd(), opt.relative, opt.force);

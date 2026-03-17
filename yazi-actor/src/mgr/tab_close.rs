@@ -13,22 +13,18 @@ impl Actor for TabClose {
 	const NAME: &str = "tab_close";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		if cx.tabs().len() == 2 {
-			succ!();
-		}
-
-		let len = cx.tabs().len();
+		let pane = cx.tabs_mut().active_pane_mut();
+		let len = pane.len();
 		if len < 2 || opt.idx >= len {
 			succ!();
 		}
 
-		let tabs = cx.tabs_mut();
-		tabs.remove(opt.idx).shutdown();
+		pane.items.remove(opt.idx).shutdown();
 
-		if opt.idx > tabs.cursor {
-			tabs.set_idx(tabs.cursor);
+		if opt.idx > pane.cursor {
+			pane.set_idx(pane.cursor);
 		} else {
-			tabs.set_idx(usize::min(tabs.cursor + 1, tabs.len() - 1));
+			pane.set_idx(usize::min(pane.cursor + 1, pane.len() - 1));
 		}
 
 		let cx = &mut Ctx::renew(cx);
