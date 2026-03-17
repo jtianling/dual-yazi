@@ -5,6 +5,7 @@ yazi_macro::mod_flat!(
 	cd
 	close
 	copy
+	copy_to
 	create
 	displace
 	displace_do
@@ -24,9 +25,12 @@ yazi_macro::mod_flat!(
 	leave
 	linemode
 	link
+	move_to
 	open
 	open_do
 	paste
+	pane_focus
+	pane_switch
 	peek
 	quit
 	refresh

@@ -8,11 +8,13 @@ use crate::tab::{Folder, Tab};
 
 pub struct Tabs {
 	pub cursor: usize,
-	pub items:  Vec<Tab>,
+	pub items: Vec<Tab>,
 }
 
 impl Default for Tabs {
-	fn default() -> Self { Self { cursor: 0, items: vec![Default::default()] } }
+	fn default() -> Self {
+		Self { cursor: 0, items: vec![Default::default(), Default::default()] }
+	}
 }
 
 impl Tabs {
@@ -29,27 +31,59 @@ impl Tabs {
 
 impl Tabs {
 	#[inline]
-	pub fn active(&self) -> &Tab { &self[self.cursor] }
+	pub fn active(&self) -> &Tab {
+		&self[self.cursor]
+	}
 
 	#[inline]
-	pub(super) fn active_mut(&mut self) -> &mut Tab { &mut self.items[self.cursor] }
+	pub fn other(&self) -> &Tab {
+		match self.cursor {
+			0 => &self.items[1],
+			1 => &self.items[0],
+			_ => unreachable!(),
+		}
+	}
 
 	#[inline]
-	pub fn parent(&self) -> Option<&Folder> { self.active().parent.as_ref() }
+	pub(super) fn active_mut(&mut self) -> &mut Tab {
+		&mut self.items[self.cursor]
+	}
 
 	#[inline]
-	pub fn current(&self) -> &Folder { &self.active().current }
+	pub fn other_mut(&mut self) -> &mut Tab {
+		match self.cursor {
+			0 => &mut self.items[1],
+			1 => &mut self.items[0],
+			_ => unreachable!(),
+		}
+	}
 
 	#[inline]
-	pub fn hovered(&self) -> Option<&File> { self.current().hovered() }
+	pub fn parent(&self) -> Option<&Folder> {
+		self.active().parent.as_ref()
+	}
+
+	#[inline]
+	pub fn current(&self) -> &Folder {
+		&self.active().current
+	}
+
+	#[inline]
+	pub fn hovered(&self) -> Option<&File> {
+		self.current().hovered()
+	}
 }
 
 impl Deref for Tabs {
 	type Target = Vec<Tab>;
 
-	fn deref(&self) -> &Self::Target { &self.items }
+	fn deref(&self) -> &Self::Target {
+		&self.items
+	}
 }
 
 impl DerefMut for Tabs {
-	fn deref_mut(&mut self) -> &mut Self::Target { &mut self.items }
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		&mut self.items
+	}
 }

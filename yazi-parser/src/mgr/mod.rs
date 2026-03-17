@@ -2,6 +2,7 @@ yazi_macro::mod_flat!(
 	cd
 	close
 	copy
+	copy_to
 	create
 	displace_do
 	download
@@ -15,8 +16,11 @@ yazi_macro::mod_flat!(
 	hover
 	linemode
 	link
+	move_to
 	open
 	open_do
+	pane_focus
+	pane_switch
 	paste
 	peek
 	remove

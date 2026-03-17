@@ -2,12 +2,20 @@ Current = {
 	_id = "current",
 }
 
-function Current:new(area, tab)
+function Current:new(area, tab, active)
 	return setmetatable({
 		_area = area,
 		_tab = tab,
 		_folder = tab.current,
+		_active = active ~= false,
 	}, { __index = self })
+end
+
+function Current:dim(element)
+	if self._active then
+		return element
+	end
+	return element:dim(false)
 end
 
 function Current:empty()
@@ -20,7 +28,7 @@ function Current:empty()
 	end
 
 	return {
-		ui.Text(s):area(self._area):align(ui.Align.CENTER):wrap(ui.Wrap.YES),
+		self:dim(ui.Text(s):area(self._area):align(ui.Align.CENTER):wrap(ui.Wrap.YES)),
 	}
 end
 
@@ -35,7 +43,8 @@ function Current:redraw()
 	local left, right = {}, {}
 	for _, f in ipairs(files) do
 		local entity = Entity:new(f)
-		left[#left + 1], right[#right + 1] = entity:redraw(), Linemode:new(f):redraw()
+		left[#left + 1], right[#right + 1] =
+			self:dim(entity:redraw()), self:dim(Linemode:new(f):redraw())
 
 		local max = math.max(0, self._area.w - right[#right]:width())
 		left[#left]:truncate { max = max, ellipsis = entity:ellipsis(max) }

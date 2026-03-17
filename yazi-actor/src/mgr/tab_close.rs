@@ -13,6 +13,10 @@ impl Actor for TabClose {
 	const NAME: &str = "tab_close";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
+		if cx.tabs().len() == 2 {
+			succ!();
+		}
+
 		let len = cx.tabs().len();
 		if len < 2 || opt.idx >= len {
 			succ!();

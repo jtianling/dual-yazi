@@ -51,6 +51,7 @@ fn stage_1(lua: &'static Lua) -> Result<()> {
 	lua.load(preset!("components/preview")).set_name("preview.lua").exec()?;
 	lua.load(preset!("components/progress")).set_name("progress.lua").exec()?;
 	lua.load(preset!("components/rail")).set_name("rail.lua").exec()?;
+	lua.load(preset!("components/dual_pane")).set_name("dual_pane.lua").exec()?;
 	lua.load(preset!("components/root")).set_name("root.lua").exec()?;
 	lua.load(preset!("components/status")).set_name("status.lua").exec()?;
 	lua.load(preset!("components/tab")).set_name("tab.lua").exec()?;

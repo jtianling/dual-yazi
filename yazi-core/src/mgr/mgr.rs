@@ -11,20 +11,20 @@ use super::{Mimetype, Tabs, Yanked};
 use crate::tab::{Folder, Tab};
 
 pub struct Mgr {
-	pub tabs:   Tabs,
+	pub tabs: Tabs,
 	pub yanked: Yanked,
 
-	pub watcher:  Watcher,
+	pub watcher: Watcher,
 	pub mimetype: Mimetype,
 }
 
 impl Mgr {
 	pub fn make() -> Self {
 		Self {
-			tabs:   Default::default(),
+			tabs: Tabs::default(),
 			yanked: Default::default(),
 
-			watcher:  Watcher::serve(),
+			watcher: Watcher::serve(),
 			mimetype: Default::default(),
 		}
 	}
@@ -37,28 +37,42 @@ impl Mgr {
 		}
 	}
 
-	pub fn shutdown(&mut self) { self.tabs.iter_mut().for_each(|t| t.shutdown()); }
+	pub fn shutdown(&mut self) {
+		self.tabs.iter_mut().for_each(|t| t.shutdown());
+	}
 }
 
 impl Mgr {
 	#[inline]
-	pub fn cwd(&self) -> &UrlBuf { self.active().cwd() }
+	pub fn cwd(&self) -> &UrlBuf {
+		self.active().cwd()
+	}
 
 	#[inline]
-	pub fn active(&self) -> &Tab { self.tabs.active() }
+	pub fn active(&self) -> &Tab {
+		self.tabs.active()
+	}
 
 	#[inline]
-	pub fn active_mut(&mut self) -> &mut Tab { self.tabs.active_mut() }
+	pub fn active_mut(&mut self) -> &mut Tab {
+		self.tabs.active_mut()
+	}
 
 	#[inline]
-	pub fn current_mut(&mut self) -> &mut Folder { &mut self.active_mut().current }
+	pub fn current_mut(&mut self) -> &mut Folder {
+		&mut self.active_mut().current
+	}
 
 	#[inline]
-	pub fn parent_mut(&mut self) -> Option<&mut Folder> { self.active_mut().parent.as_mut() }
+	pub fn parent_mut(&mut self) -> Option<&mut Folder> {
+		self.active_mut().parent.as_mut()
+	}
 }
 
 impl Splatable for Mgr {
-	fn tab(&self) -> usize { self.tabs.cursor }
+	fn tab(&self) -> usize {
+		self.tabs.cursor
+	}
 
 	fn selected(&self, tab: usize, mut idx: Option<usize>) -> impl Iterator<Item = Url<'_>> {
 		idx = idx.and_then(|i| i.checked_sub(1));
@@ -80,5 +94,7 @@ impl Splatable for Mgr {
 			.map(|h| h.url.as_url())
 	}
 
-	fn yanked(&self) -> impl Iterator<Item = Url<'_>> { self.yanked.iter().map(|u| u.as_url()) }
+	fn yanked(&self) -> impl Iterator<Item = Url<'_>> {
+		self.yanked.iter().map(|u| u.as_url())
+	}
 }

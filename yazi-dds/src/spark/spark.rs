@@ -30,6 +30,7 @@ pub enum Spark<'a> {
 	Cd(yazi_parser::mgr::CdOpt),
 	Close(yazi_parser::mgr::CloseOpt),
 	Copy(yazi_parser::mgr::CopyOpt),
+	CopyTo(yazi_parser::mgr::CopyToOpt),
 	Create(yazi_parser::mgr::CreateOpt),
 	Displace(yazi_parser::VoidOpt),
 	DisplaceDo(yazi_parser::mgr::DisplaceDoOpt),
@@ -54,8 +55,11 @@ pub enum Spark<'a> {
 	Leave(yazi_parser::VoidOpt),
 	Linemode(yazi_parser::mgr::LinemodeOpt),
 	Link(yazi_parser::mgr::LinkOpt),
+	MoveTo(yazi_parser::mgr::MoveToOpt),
 	Open(yazi_parser::mgr::OpenOpt),
 	OpenDo(yazi_parser::mgr::OpenDoOpt),
+	PaneFocus(yazi_parser::mgr::PaneFocusOpt),
+	PaneSwitch(yazi_parser::mgr::PaneSwitchOpt),
 	Paste(yazi_parser::mgr::PasteOpt),
 	Peek(yazi_parser::mgr::PeekOpt),
 	Quit(yazi_parser::app::QuitOpt),
@@ -211,6 +215,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::Cd(b) => b.into_lua(lua),
 			Self::Close(b) => b.into_lua(lua),
 			Self::Copy(b) => b.into_lua(lua),
+			Self::CopyTo(b) => b.into_lua(lua),
 			Self::Create(b) => b.into_lua(lua),
 			Self::Displace(b) => b.into_lua(lua),
 			Self::DisplaceDo(b) => b.into_lua(lua),
@@ -235,8 +240,11 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::Leave(b) => b.into_lua(lua),
 			Self::Linemode(b) => b.into_lua(lua),
 			Self::Link(b) => b.into_lua(lua),
+			Self::MoveTo(b) => b.into_lua(lua),
 			Self::Open(b) => b.into_lua(lua),
 			Self::OpenDo(b) => b.into_lua(lua),
+			Self::PaneFocus(b) => b.into_lua(lua),
+			Self::PaneSwitch(b) => b.into_lua(lua),
 			Self::Paste(b) => b.into_lua(lua),
 			Self::Peek(b) => b.into_lua(lua),
 			Self::Quit(b) => b.into_lua(lua),
@@ -381,6 +389,7 @@ try_from_spark!(yazi_parser::input::ShowOpt, input:show);
 try_from_spark!(yazi_parser::mgr::CdOpt, mgr:cd);
 try_from_spark!(yazi_parser::mgr::CloseOpt, mgr:close);
 try_from_spark!(yazi_parser::mgr::CopyOpt, mgr:copy);
+try_from_spark!(yazi_parser::mgr::CopyToOpt, mgr:copy_to);
 try_from_spark!(yazi_parser::mgr::CreateOpt, mgr:create);
 try_from_spark!(yazi_parser::mgr::DisplaceDoOpt, mgr:displace_do);
 try_from_spark!(yazi_parser::mgr::DownloadOpt, mgr:download);
@@ -394,8 +403,11 @@ try_from_spark!(yazi_parser::mgr::HiddenOpt, mgr:hidden);
 try_from_spark!(yazi_parser::mgr::HoverOpt, mgr:hover);
 try_from_spark!(yazi_parser::mgr::LinemodeOpt, mgr:linemode);
 try_from_spark!(yazi_parser::mgr::LinkOpt, mgr:link);
+try_from_spark!(yazi_parser::mgr::MoveToOpt, mgr:move_to);
 try_from_spark!(yazi_parser::mgr::OpenDoOpt, mgr:open_do);
 try_from_spark!(yazi_parser::mgr::OpenOpt, mgr:open);
+try_from_spark!(yazi_parser::mgr::PaneFocusOpt, mgr:pane_focus);
+try_from_spark!(yazi_parser::mgr::PaneSwitchOpt, mgr:pane_switch);
 try_from_spark!(yazi_parser::mgr::PasteOpt, mgr:paste);
 try_from_spark!(yazi_parser::mgr::PeekOpt, mgr:peek);
 try_from_spark!(yazi_parser::mgr::RemoveOpt, mgr:remove, mgr:remove_do);

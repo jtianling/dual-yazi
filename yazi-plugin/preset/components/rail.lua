@@ -2,20 +2,34 @@ Rail = {
 	_id = "rail",
 }
 
-function Rail:new(chunks, tab)
-	local me = setmetatable({ _chunks = chunks, _tab = tab }, { __index = self })
+function Rail:new(chunks, tab, active)
+	local me = setmetatable({ _chunks = chunks, _tab = tab, _active = active ~= false }, { __index = self })
 	me:build()
 	return me
 end
 
+function Rail:style(style)
+	local s = ui.Style():patch(style)
+	if not self._active then
+		s:patch(ui.Style():dim(false))
+	end
+	return s
+end
+
 function Rail:build()
 	self._base = {
-		ui.Bar(ui.Edge.RIGHT):area(self._chunks[1]):symbol(th.mgr.border_symbol):style(th.mgr.border_style),
-		ui.Bar(ui.Edge.LEFT):area(self._chunks[3]):symbol(th.mgr.border_symbol):style(th.mgr.border_style),
+		ui.Bar(ui.Edge.RIGHT)
+			:area(self._chunks[1])
+			:symbol(th.mgr.border_symbol)
+			:style(self:style(th.mgr.border_style)),
+		ui.Bar(ui.Edge.LEFT)
+			:area(self._chunks[3])
+			:symbol(th.mgr.border_symbol)
+			:style(self:style(th.mgr.border_style)),
 	}
 	self._children = {
-		Marker:new(self._chunks[1], self._tab.parent),
-		Marker:new(self._chunks[2], self._tab.current),
+		Marker:new(self._chunks[1], self._tab.parent, self._active),
+		Marker:new(self._chunks[2], self._tab.current, self._active),
 	}
 end
 

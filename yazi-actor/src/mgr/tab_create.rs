@@ -17,6 +17,10 @@ impl Actor for TabCreate {
 	const NAME: &str = "tab_create";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
+		if cx.tabs().len() == 2 {
+			succ!();
+		}
+
 		if cx.tabs().len() >= MAX_TABS {
 			succ!(NotifyProxy::push_warn(
 				"Too many tabs",

@@ -2,11 +2,24 @@ Marker = {
 	_id = "marker",
 }
 
-function Marker:new(area, folder)
+function Marker:new(area, folder, active)
 	return setmetatable({
 		_area = area,
 		_folder = folder,
+		_active = active ~= false,
 	}, { __index = self })
+end
+
+function Marker:decorate(style)
+	if not style then
+		return
+	end
+
+	local s = ui.Style():patch(style)
+	if not self._active then
+		s:patch(ui.Style():dim(false))
+	end
+	return s
 end
 
 function Marker:redraw()
@@ -29,7 +42,10 @@ function Marker:redraw()
 			w = 1,
 			h = math.min(1 + last[2] - last[1], self._area.y + self._area.h - y),
 		}
-		elements[#elements + 1] = ui.Bar(ui.Edge.LEFT):area(rect):style(last[3]):symbol(th.mgr.marker_symbol)
+		elements[#elements + 1] = ui.Bar(ui.Edge.LEFT)
+			:area(rect)
+			:style(self:decorate(last[3]))
+			:symbol(th.mgr.marker_symbol)
 	end
 
 	local last = { 0, 0, nil } -- start, end, style

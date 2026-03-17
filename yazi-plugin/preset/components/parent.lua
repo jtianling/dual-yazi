@@ -2,12 +2,20 @@ Parent = {
 	_id = "parent",
 }
 
-function Parent:new(area, tab)
+function Parent:new(area, tab, active)
 	return setmetatable({
 		_area = area,
 		_tab = tab,
 		_folder = tab.parent,
+		_active = active ~= false,
 	}, { __index = self })
+end
+
+function Parent:dim(element)
+	if self._active then
+		return element
+	end
+	return element:dim(false)
 end
 
 function Parent:reflow() return { self } end
@@ -20,7 +28,8 @@ function Parent:redraw()
 	local left, right = {}, {}
 	for _, f in ipairs(self._folder.window) do
 		local entity = Entity:new(f)
-		left[#left + 1], right[#right + 1] = entity:redraw(), Linemode:new(f):redraw()
+		left[#left + 1], right[#right + 1] =
+			self:dim(entity:redraw()), self:dim(Linemode:new(f):redraw())
 
 		local max = math.max(0, self._area.w - right[#right]:width())
 		left[#left]:truncate { max = max, ellipsis = entity:ellipsis(max) }

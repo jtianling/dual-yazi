@@ -15,7 +15,8 @@ impl Actor for Bootstrap {
 	const NAME: &str = "bootstrap";
 
 	fn act(cx: &mut Ctx, _: Self::Options) -> Result<Data> {
-		cx.mgr.tabs.resize_with(BOOT.files.len(), Default::default);
+		let count = BOOT.files.len().max(2);
+		cx.mgr.tabs.resize_with(count, Default::default);
 
 		for (i, file) in BOOT.files.iter().enumerate().rev() {
 			cx.tab = i;
@@ -26,6 +27,12 @@ impl Actor for Bootstrap {
 			}
 		}
 
+		if BOOT.files.len() < 2 {
+			cx.tab = 1;
+			act!(mgr:cd, cx, (BOOT.cwds[0].clone(), CdSource::Tab))?;
+		}
+
+		cx.tab = 0;
 		succ!();
 	}
 }

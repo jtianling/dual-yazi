@@ -113,6 +113,8 @@ impl<'a> Executor<'a> {
 		on!(yank);
 		on!(unyank);
 		on!(paste);
+		on!(copy_to);
+		on!(move_to);
 		on!(link);
 		on!(hardlink);
 		on!(remove);
@@ -145,6 +147,8 @@ impl<'a> Executor<'a> {
 		on!(tab_close);
 		on!(tab_switch);
 		on!(tab_swap);
+		on!(pane_switch);
+		on!(pane_focus);
 
 		// VFS
 		on!(download);

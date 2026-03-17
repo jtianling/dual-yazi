@@ -2,8 +2,8 @@ Tab = {
 	_id = "tab",
 }
 
-function Tab:new(area, tab)
-	local me = setmetatable({ _area = area, _tab = tab }, { __index = self })
+function Tab:new(area, tab, active)
+	local me = setmetatable({ _area = area, _tab = tab, _active = active ~= false }, { __index = self })
 	me:layout()
 	me:build()
 	return me
@@ -24,10 +24,10 @@ end
 function Tab:build()
 	local c = self._chunks
 	self._children = {
-		Parent:new(c[1]:pad(ui.Pad.x(1)), self._tab),
-		Current:new(c[2]:pad(ui.Pad(0, c[3].w > 0 and 0 or 1, 0, c[1].w > 0 and 0 or 1)), self._tab),
+		Parent:new(c[1]:pad(ui.Pad.x(1)), self._tab, self._active),
+		Current:new(c[2]:pad(ui.Pad(0, c[3].w > 0 and 0 or 1, 0, c[1].w > 0 and 0 or 1)), self._tab, self._active),
 		Preview:new(c[3]:pad(ui.Pad.x(1)), self._tab),
-		Rail:new(c, self._tab),
+		Rail:new(c, self._tab, self._active),
 	}
 end
 

@@ -1,28 +1,20 @@
 use anyhow::Result;
 use yazi_macro::{act, render, succ};
-use yazi_parser::mgr::TabSwitchOpt;
+use yazi_parser::mgr::PaneFocusOpt;
 use yazi_shared::data::Data;
 
 use crate::{Actor, Ctx};
 
-pub struct TabSwitch;
+pub struct PaneFocus;
 
-impl Actor for TabSwitch {
-	type Options = TabSwitchOpt;
+impl Actor for PaneFocus {
+	type Options = PaneFocusOpt;
 
-	const NAME: &str = "tab_switch";
+	const NAME: &str = "pane_focus";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		if cx.tabs().len() == 2 {
-			succ!();
-		}
-
 		let tabs = cx.tabs_mut();
-		let idx = if opt.relative {
-			opt.step.saturating_add_unsigned(tabs.cursor).rem_euclid(tabs.len() as _) as _
-		} else {
-			opt.step as usize
-		};
+		let idx = (!opt.left) as usize;
 
 		if idx == tabs.cursor || idx >= tabs.len() {
 			succ!();

@@ -16,23 +16,40 @@ impl Actor for UpdateFiles {
 	const NAME: &str = "update_files";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
-		let revision = cx.current().files.revision;
 		let linked: Vec<_> = LINKED.read().from_dir(opt.op.cwd()).map(|u| opt.op.chdir(u)).collect();
+		let tab_count = cx.mgr.tabs.len();
+		let saved = cx.tab;
+
+		let mut revisions = Vec::with_capacity(tab_count);
+		for i in 0..tab_count {
+			cx.tab = i;
+			revisions.push(cx.current().files.revision);
+		}
 
 		for op in [opt.op].into_iter().chain(linked) {
 			cx.mgr.yanked.apply_op(&op);
-			Self::update_tab(cx, op).ok();
+			for i in 0..tab_count {
+				cx.tab = i;
+				Self::update_tab(cx, op.clone()).ok();
+			}
 		}
 
 		render!(cx.mgr.yanked.catchup_revision(false));
-		act!(mgr:hidden, cx).ok();
-		act!(mgr:sort, cx).ok();
 
-		if revision != cx.current().files.revision {
-			act!(mgr:hover, cx)?;
+		for i in 0..tab_count {
+			cx.tab = i;
+			act!(mgr:hidden, cx).ok();
+			act!(mgr:sort, cx).ok();
+			if revisions[i] != cx.current().files.revision {
+				act!(mgr:hover, cx)?;
+				act!(mgr:update_paged, cx)?;
+			}
+		}
+
+		cx.tab = saved;
+		if revisions[saved] != cx.current().files.revision {
 			act!(mgr:peek, cx)?;
 			act!(mgr:watch, cx)?;
-			act!(mgr:update_paged, cx)?;
 		}
 		succ!();
 	}

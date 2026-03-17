@@ -14,6 +14,10 @@ impl Actor for TabSwap {
 	const NAME: &str = "tab_swap";
 
 	fn act(cx: &mut Ctx, opt: Self::Options) -> Result<Data> {
+		if cx.tabs().len() == 2 {
+			succ!();
+		}
+
 		let tabs = cx.tabs_mut();
 
 		let new = opt.step.add(tabs.cursor, tabs.len(), 0);
