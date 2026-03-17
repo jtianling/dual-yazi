@@ -65,8 +65,7 @@ keymap = [
 	{ on = [ "<C-w>", "p" ],     run = "pane_preview",       desc = "Toggle preview in dual pane" },
 
 	# Tabs
-	{ on = [ "t", "t" ], run = "tab_create --current",     desc = "Create a new tab in CWD" },
-	{ on = [ "t", "r" ], run = "tab_rename --interactive", desc = "Rename current tab" },
+	{ on = "t", run = "tab_create --current", desc = "Create a new tab in CWD" },
 
 	{ on = "1", run = "tab_switch 0", desc = "Switch to first tab" },
 	{ on = "2", run = "tab_switch 1", desc = "Switch to second tab" },
