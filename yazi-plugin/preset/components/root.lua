@@ -11,29 +11,41 @@ function Root:new(area)
 end
 
 function Root:layout()
-	self._chunks = ui.Layout()
-		:direction(ui.Layout.VERTICAL)
-		:constraints({
-			ui.Constraint.Length(1),
-			ui.Constraint.Fill(1),
-			ui.Constraint.Length(1),
-		})
-		:split(self._area)
+	if cx.tabs.single_pane then
+		self._chunks = ui.Layout()
+			:direction(ui.Layout.VERTICAL)
+			:constraints({
+				ui.Constraint.Length(1),
+				ui.Constraint.Fill(1),
+				ui.Constraint.Length(1),
+			})
+			:split(self._area)
+	else
+		self._chunks = ui.Layout()
+			:direction(ui.Layout.VERTICAL)
+			:constraints({
+				ui.Constraint.Fill(1),
+			})
+			:split(self._area)
+	end
 end
 
 function Root:build()
-	local main
 	if cx.tabs.single_pane then
-		main = Tab:new(self._chunks[2], cx.active)
+		local main = Tab:new(self._chunks[2], cx.active)
+		self._children = {
+			Header:new(self._chunks[1], cx.active),
+			main,
+			Status:new(self._chunks[3], cx.active),
+			Modal:new(self._area),
+		}
 	else
-		main = DualPane:new(self._chunks[2])
+		local main = DualPane:new(self._chunks[1])
+		self._children = {
+			main,
+			Modal:new(self._area),
+		}
 	end
-	self._children = {
-		Header:new(self._chunks[1], cx.active),
-		main,
-		Status:new(self._chunks[3], cx.active),
-		Modal:new(self._area),
-	}
 end
 
 function Root:reflow()
