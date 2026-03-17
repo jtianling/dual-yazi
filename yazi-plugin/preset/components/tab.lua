@@ -2,15 +2,15 @@ Tab = {
 	_id = "tab",
 }
 
-function Tab:new(area, tab, active)
-	local me = setmetatable({ _area = area, _tab = tab, _active = active ~= false }, { __index = self })
+function Tab:new(area, tab, active, ratio)
+	local me = setmetatable({ _area = area, _tab = tab, _active = active ~= false, _ratio = ratio }, { __index = self })
 	me:layout()
 	me:build()
 	return me
 end
 
 function Tab:layout()
-	local ratio = rt.mgr.ratio
+	local ratio = self._ratio or rt.mgr.ratio
 	self._chunks = ui.Layout()
 		:direction(ui.Layout.HORIZONTAL)
 		:constraints({

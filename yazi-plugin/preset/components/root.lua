@@ -22,9 +22,15 @@ function Root:layout()
 end
 
 function Root:build()
+	local main
+	if cx.tabs.single_pane then
+		main = Tab:new(self._chunks[2], cx.active)
+	else
+		main = DualPane:new(self._chunks[2])
+	end
 	self._children = {
 		Header:new(self._chunks[1], cx.active),
-		DualPane:new(self._chunks[2]),
+		main,
 		Status:new(self._chunks[3], cx.active),
 		Modal:new(self._area),
 	}

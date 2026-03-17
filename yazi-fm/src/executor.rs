@@ -149,6 +149,7 @@ impl<'a> Executor<'a> {
 		on!(tab_swap);
 		on!(pane_switch);
 		on!(pane_focus);
+		on!(pane_only);
 
 		// VFS
 		on!(download);

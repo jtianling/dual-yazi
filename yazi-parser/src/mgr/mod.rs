@@ -20,6 +20,7 @@ yazi_macro::mod_flat!(
 	open
 	open_do
 	pane_focus
+	pane_only
 	pane_switch
 	paste
 	peek

@@ -22,6 +22,7 @@ end
 
 function DualPane:build()
 	local c = self._chunks
+	local ratio = { parent = 1, current = 2, preview = 0, all = 3 }
 	self._base = {
 		ui.Bar(ui.Edge.LEFT)
 			:area(c[2])
@@ -29,8 +30,8 @@ function DualPane:build()
 			:style(ui.Style():patch(th.mgr.border_style)),
 	}
 	self._children = {
-		Tab:new(c[1], cx.tabs[1], cx.tabs.idx == 1),
-		Tab:new(c[3], cx.tabs[2], cx.tabs.idx == 2),
+		Tab:new(c[1], cx.tabs[1], cx.tabs.idx == 1, ratio),
+		Tab:new(c[3], cx.tabs[2], cx.tabs.idx == 2, ratio),
 	}
 end
 
