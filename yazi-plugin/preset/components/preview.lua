@@ -2,12 +2,16 @@ Preview = {
 	_id = "preview",
 }
 
-function Preview:new(area, tab)
-	return setmetatable({
+function Preview:new(area, tab, active)
+	local me = setmetatable({
 		_area = area,
 		_tab = tab,
 		_folder = tab.preview.folder,
 	}, { __index = self })
+	if active == false then
+		me._id = "_preview_inactive"
+	end
+	return me
 end
 
 function Preview:reflow() return { self } end

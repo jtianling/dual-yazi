@@ -60,6 +60,7 @@ pub enum Spark<'a> {
 	OpenDo(yazi_parser::mgr::OpenDoOpt),
 	PaneFocus(yazi_parser::mgr::PaneFocusOpt),
 	PaneOnly(yazi_parser::mgr::PaneOnlyOpt),
+	PanePreview(yazi_parser::mgr::PanePreviewOpt),
 	PaneSwitch(yazi_parser::mgr::PaneSwitchOpt),
 	Paste(yazi_parser::mgr::PasteOpt),
 	Peek(yazi_parser::mgr::PeekOpt),
@@ -246,6 +247,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::OpenDo(b) => b.into_lua(lua),
 			Self::PaneFocus(b) => b.into_lua(lua),
 			Self::PaneOnly(b) => b.into_lua(lua),
+			Self::PanePreview(b) => b.into_lua(lua),
 			Self::PaneSwitch(b) => b.into_lua(lua),
 			Self::Paste(b) => b.into_lua(lua),
 			Self::Peek(b) => b.into_lua(lua),
@@ -410,6 +412,7 @@ try_from_spark!(yazi_parser::mgr::OpenDoOpt, mgr:open_do);
 try_from_spark!(yazi_parser::mgr::OpenOpt, mgr:open);
 try_from_spark!(yazi_parser::mgr::PaneFocusOpt, mgr:pane_focus);
 try_from_spark!(yazi_parser::mgr::PaneOnlyOpt, mgr:pane_only);
+try_from_spark!(yazi_parser::mgr::PanePreviewOpt, mgr:pane_preview);
 try_from_spark!(yazi_parser::mgr::PaneSwitchOpt, mgr:pane_switch);
 try_from_spark!(yazi_parser::mgr::PasteOpt, mgr:paste);
 try_from_spark!(yazi_parser::mgr::PeekOpt, mgr:peek);

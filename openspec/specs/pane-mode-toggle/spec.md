@@ -61,9 +61,39 @@ The `pane_switch`, `copy_to`, and `move_to` actions SHALL continue to function i
 - **WHEN** the system is in single-pane mode, the active pane has file.txt selected, and the hidden pane is in /backup
 - **THEN** pressing F5 copies file.txt to /backup/file.txt
 
-### Requirement: single_pane state exposed to Lua
-The system SHALL expose the current mode state to Lua as `cx.tabs.single_pane` (boolean).  Lua UI components SHALL use this value to decide whether to render DualPane or single Tab layout.
+### Requirement: Toggle preview in dual-pane mode
+The system SHALL provide a `pane_preview` action that toggles the dual-pane layout between directory mode (parent + current, ratio `[1, 2, 0]`) and preview mode (current + preview, ratio `[0, 1, 1]`).  The default mode SHALL be directory mode.
+
+#### Scenario: Switch from directory mode to preview mode
+- **WHEN** the system is in dual-pane directory mode and the user triggers pane_preview
+- **THEN** both panes switch to showing current directory and preview columns, with no parent directory column
+
+#### Scenario: Switch from preview mode to directory mode
+- **WHEN** the system is in dual-pane preview mode and the user triggers pane_preview
+- **THEN** both panes switch back to showing parent and current directory columns, with no preview column
+
+#### Scenario: Preview rendering for both panes
+- **WHEN** the system is in dual-pane preview mode
+- **THEN** the active pane SHALL show a live preview of the hovered file, and the inactive pane SHALL show its last previewed content (from when it was last active)
+
+#### Scenario: Preview mode state resets on startup
+- **WHEN** the application starts
+- **THEN** the system SHALL be in directory mode (preview_pane is false)
+
+### Requirement: Ctrl-w p keybinding
+The system SHALL bind `Ctrl-w p` to the `pane_preview` action.
+
+#### Scenario: Ctrl-w p triggers toggle
+- **WHEN** the user presses Ctrl-w followed by p
+- **THEN** the pane_preview action is executed, toggling the dual-pane layout between directory and preview modes
+
+### Requirement: Mode states exposed to Lua
+The system SHALL expose the current mode states to Lua as `cx.tabs.single_pane` (boolean) and `cx.tabs.preview_pane` (boolean).  Lua UI components SHALL use these values to decide rendering layout.
 
 #### Scenario: Lua reads single_pane state
 - **WHEN** Lua rendering occurs
 - **THEN** `cx.tabs.single_pane` returns `false` in dual-pane mode and `true` in single-pane mode
+
+#### Scenario: Lua reads preview_pane state
+- **WHEN** Lua rendering occurs
+- **THEN** `cx.tabs.preview_pane` returns `false` in directory mode and `true` in preview mode

@@ -150,6 +150,7 @@ impl<'a> Executor<'a> {
 		on!(pane_switch);
 		on!(pane_focus);
 		on!(pane_only);
+		on!(pane_preview);
 
 		// VFS
 		on!(download);

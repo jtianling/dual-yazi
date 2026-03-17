@@ -14,11 +14,15 @@ The system SHALL initialize with exactly two panes on startup.  The left pane (i
 - **THEN** two panes are displayed side-by-side, left pane is active, both showing the current working directory
 
 ### Requirement: Dual pane layout rendering
-The system SHALL render two panes horizontally with a vertical separator between them when in dual-pane mode.  When in single-pane mode, the system SHALL render only the active pane at full width using the user's configured ratio (default `[1, 4, 3]`).  Each pane in dual-pane mode SHALL use ratio `[1, 2, 0]` by default (parent + current, no preview).  The two panes SHALL each occupy approximately 50% of the available width, minus the separator.
+The system SHALL render two panes horizontally with a vertical separator between them when in dual-pane mode.  When in single-pane mode, the system SHALL render only the active pane at full width using the user's configured ratio (default `[1, 4, 3]`).  Each pane in dual-pane mode SHALL use ratio `[1, 2, 0]` by default (parent + current, no preview).  When preview_pane mode is enabled, each pane SHALL use ratio `[0, 1, 1]` (current + preview, no parent).  The two panes SHALL each occupy approximately 50% of the available width, minus the separator.
 
 #### Scenario: Normal terminal width in dual-pane mode
-- **WHEN** the terminal has sufficient width (>= 80 columns) and the system is in dual-pane mode
+- **WHEN** the terminal has sufficient width (>= 80 columns) and the system is in dual-pane mode with preview_pane disabled
 - **THEN** two panes are rendered side-by-side, each showing parent and current columns, separated by a vertical line
+
+#### Scenario: Dual-pane preview mode rendering
+- **WHEN** the system is in dual-pane mode with preview_pane enabled
+- **THEN** two panes are rendered side-by-side, each showing current and preview columns (no parent column), separated by a vertical line
 
 #### Scenario: Single-pane mode rendering
 - **WHEN** the system is in single-pane mode
@@ -26,7 +30,7 @@ The system SHALL render two panes horizontally with a vertical separator between
 
 #### Scenario: Ratio configuration
 - **WHEN** the user configures a custom ratio (e.g., `[1, 2, 1]`)
-- **THEN** single-pane mode SHALL use the configured ratio; dual-pane mode SHALL use `[1, 2, 0]`
+- **THEN** single-pane mode SHALL use the configured ratio; dual-pane default mode SHALL use `[1, 2, 0]`; dual-pane preview mode SHALL use `[0, 1, 1]`
 
 ### Requirement: Active pane visual indicator
 The system SHALL visually distinguish the active pane from the inactive pane.  The inactive pane SHALL have a dimmed or reduced contrast appearance compared to the active pane.

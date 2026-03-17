@@ -61,6 +61,7 @@ keymap = [
 	{ on = [ "<C-w>", "h" ],     run = "pane_focus --left",  desc = "Focus the left pane" },
 	{ on = [ "<C-w>", "l" ],     run = "pane_focus --right", desc = "Focus the right pane" },
 	{ on = [ "<C-w>", "o" ],     run = "pane_only",          desc = "Toggle single/dual pane" },
+	{ on = [ "<C-w>", "p" ],     run = "pane_preview",       desc = "Toggle preview in dual pane" },
 
 	# Operation
 	{ on = "o",         run = "open",                        desc = "Open selected files" },

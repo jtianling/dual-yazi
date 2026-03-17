@@ -22,7 +22,12 @@ end
 
 function DualPane:build()
 	local c = self._chunks
-	local ratio = { parent = 1, current = 2, preview = 0, all = 3 }
+	local ratio
+	if cx.tabs.preview_pane then
+		ratio = { parent = 0, current = 1, preview = 1, all = 2 }
+	else
+		ratio = { parent = 1, current = 2, preview = 0, all = 3 }
+	end
 	self._base = {
 		ui.Bar(ui.Edge.LEFT)
 			:area(c[2])

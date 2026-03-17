@@ -24,6 +24,7 @@ impl UserData for Tabs {
 	fn add_fields<F: UserDataFields<Self>>(fields: &mut F) {
 		fields.add_field_method_get("idx", |_, me| Ok(me.cursor + 1));
 		fields.add_field_method_get("single_pane", |_, me| Ok(me.single_pane));
+		fields.add_field_method_get("preview_pane", |_, me| Ok(me.preview_pane));
 	}
 
 	fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {

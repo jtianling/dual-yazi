@@ -69,6 +69,13 @@ The system SHALL NOT rebind the Space key.  Space SHALL continue to toggle selec
 - **WHEN** the user presses Space on a file
 - **THEN** the file's selection state is toggled and the cursor moves down one item
 
+### Requirement: Ctrl-w p toggles preview mode
+The system SHALL bind `Ctrl-w p` to the `pane_preview` action, which toggles the dual-pane layout between directory mode and preview mode.
+
+#### Scenario: Ctrl-w p toggles preview
+- **WHEN** the user presses Ctrl-w followed by p
+- **THEN** the dual-pane layout toggles between directory mode (parent + current) and preview mode (current + preview)
+
 ### Requirement: Tab action disabled in dual-pane mode
 The system SHALL disable `tab_create`, `tab_close`, `tab_switch`, `tab_swap`, and `tab_rename` actions.  These actions SHALL be no-ops when invoked.
 

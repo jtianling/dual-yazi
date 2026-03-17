@@ -31,6 +31,7 @@ yazi_macro::mod_flat!(
 	paste
 	pane_focus
 	pane_only
+	pane_preview
 	pane_switch
 	peek
 	quit

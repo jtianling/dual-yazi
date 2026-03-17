@@ -10,11 +10,17 @@ pub struct Tabs {
 	pub cursor: usize,
 	pub items: Vec<Tab>,
 	pub single_pane: bool,
+	pub preview_pane: bool,
 }
 
 impl Default for Tabs {
 	fn default() -> Self {
-		Self { cursor: 0, items: vec![Default::default(), Default::default()], single_pane: false }
+		Self {
+			cursor: 0,
+			items: vec![Default::default(), Default::default()],
+			single_pane: false,
+			preview_pane: false,
+		}
 	}
 }
 
