@@ -27,8 +27,8 @@ impl Actor for Undo {
 				UndoOp::Create { ref target, is_dir } => {
 					Self::undo_create(target, is_dir).await.ok();
 				}
-				UndoOp::Copy { ref created } => {
-					Self::undo_copy(created).await.ok();
+				UndoOp::Copy { ref pairs } => {
+					Self::undo_copy(pairs).await.ok();
 				}
 				UndoOp::Move { ref pairs } => {
 					Self::undo_move(pairs).await.ok();
@@ -75,12 +75,12 @@ impl Undo {
 		Ok(())
 	}
 
-	async fn undo_copy(created: &[yazi_shared::url::UrlBuf]) -> Result<()> {
-		for target in created {
-			if provider::remove_file(target).await.is_ok()
-				|| provider::remove_dir_all(target).await.is_ok()
+	async fn undo_copy(pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)]) -> Result<()> {
+		for (_, dest) in pairs {
+			if provider::remove_file(dest).await.is_ok()
+				|| provider::remove_dir_all(dest).await.is_ok()
 			{
-				if let Some((parent, urn)) = target.pair() {
+				if let Some((parent, urn)) = dest.pair() {
 					FilesOp::Deleting(parent.into(), [urn.into()].into()).emit();
 				}
 			}

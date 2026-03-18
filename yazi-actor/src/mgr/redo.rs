@@ -18,6 +18,13 @@ impl Actor for Redo {
 	fn act(cx: &mut Ctx, _opt: Self::Options) -> Result<Data> {
 		let Some(entry) = cx.mgr.undo.redo() else { succ!() };
 
+		if let UndoOp::Copy { ref pairs } = entry.op {
+			for (from, to) in pairs {
+				cx.core.tasks.scheduler.file_copy(from.clone(), to.clone(), true, false);
+			}
+			succ!();
+		}
+
 		tokio::spawn(async move {
 			let _permit = WATCHER.acquire().await.unwrap();
 			match entry.op {
@@ -27,9 +34,7 @@ impl Actor for Redo {
 				UndoOp::Create { ref target, is_dir } => {
 					Self::redo_create(target, is_dir).await.ok();
 				}
-				UndoOp::Copy { created: _ } => {
-					// Cannot redo a copy without original sources; skip
-				}
+				UndoOp::Copy { .. } => unreachable!(),
 				UndoOp::Move { ref pairs } => {
 					Self::redo_move(pairs).await.ok();
 				}

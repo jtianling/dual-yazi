@@ -4,6 +4,6 @@ use crate::url::UrlBuf;
 pub enum UndoOp {
 	Rename { old: UrlBuf, new: UrlBuf },
 	Create { target: UrlBuf, is_dir: bool },
-	Copy { created: Vec<UrlBuf> },
+	Copy { pairs: Vec<(UrlBuf, UrlBuf)> },
 	Move { pairs: Vec<(UrlBuf, UrlBuf)> },
 }

@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Undo stack records file operations
 The system SHALL maintain an undo stack (max 20 entries) at the Mgr level that records completed file operations. When a new operation is recorded, the redo stack SHALL be cleared. When the stack exceeds 20 entries, the oldest entry SHALL be dropped.
@@ -35,38 +35,6 @@ The system SHALL maintain an undo stack (max 20 entries) at the Mgr level that r
 - **WHEN** the undo stack has 20 entries and a new operation is recorded
 - **THEN** the oldest (bottom) entry SHALL be removed before the new entry is pushed
 
-### Requirement: Undo reverses the most recent operation
-The system SHALL reverse the most recent undoable file operation when the user presses `u` in the Mgr layer. The reversed entry SHALL be moved to the redo stack.
-
-#### Scenario: Undo a rename
-- **WHEN** user presses `u` and the top undo entry is Rename { old, new }
-- **THEN** the system SHALL rename the file from `new` back to `old`
-- **AND** the entry SHALL be moved to the redo stack
-- **AND** appropriate FilesOp events SHALL be emitted to update the UI
-
-#### Scenario: Undo a create
-- **WHEN** user presses `u` and the top undo entry is Create { target, is_dir }
-- **THEN** the system SHALL delete the created file or directory
-- **AND** the entry SHALL be moved to the redo stack
-
-#### Scenario: Undo a copy
-- **WHEN** user presses `u` and the top undo entry is Copy { pairs }
-- **THEN** the system SHALL delete all destination files from the `pairs` list
-- **AND** the entry SHALL be moved to the redo stack
-
-#### Scenario: Undo a move
-- **WHEN** user presses `u` and the top undo entry is Move { pairs }
-- **THEN** the system SHALL move each file from its destination back to its source
-- **AND** the entry SHALL be moved to the redo stack
-
-#### Scenario: Undo with empty stack
-- **WHEN** user presses `u` and the undo stack is empty
-- **THEN** the system SHALL do nothing (no error, no notification)
-
-#### Scenario: Undo when file no longer exists
-- **WHEN** user presses `u` but the target file has been externally modified or deleted
-- **THEN** the system SHALL skip the operation silently and still move the entry to redo
-
 ### Requirement: Redo re-applies the most recently undone operation
 The system SHALL re-apply the most recently undone operation when the user presses `<C-r>` in the Mgr layer. The re-applied entry SHALL be moved back to the undo stack.
 
@@ -93,14 +61,3 @@ The system SHALL re-apply the most recently undone operation when the user press
 #### Scenario: Redo with empty stack
 - **WHEN** user presses `<C-r>` and the redo stack is empty
 - **THEN** the system SHALL do nothing
-
-### Requirement: Non-undoable operations are not recorded
-The system SHALL NOT record undo entries for trash, permanent delete, shell commands, bulk rename, or plugin operations.
-
-#### Scenario: Trash operation is not recorded
-- **WHEN** user trashes a file (non-permanent delete)
-- **THEN** no undo entry SHALL be created
-
-#### Scenario: Permanent delete is not recorded
-- **WHEN** user permanently deletes a file
-- **THEN** no undo entry SHALL be created

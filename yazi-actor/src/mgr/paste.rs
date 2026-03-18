@@ -30,14 +30,14 @@ impl Actor for Paste {
 			mgr.tabs.all_tabs_mut().for_each(|t| _ = t.selected.remove_many(mgr.yanked.iter()));
 			act!(mgr:unyank, cx)
 		} else {
-			let created: Vec<_> = mgr
+			let pairs: Vec<_> = mgr
 				.yanked
 				.iter()
-				.filter_map(|u| u.name().map(|n| dest.try_join(n)).and_then(|r| r.ok()))
+				.filter_map(|u| u.name().map(|n| dest.try_join(n)).and_then(|r| r.ok()).map(|to| ((**u).clone(), to)))
 				.collect();
 
 			cx.core.tasks.file_copy(&mgr.yanked, &dest, opt.force, opt.follow);
-			mgr.undo.push(UndoOp::Copy { created });
+			mgr.undo.push(UndoOp::Copy { pairs });
 			succ!();
 		}
 	}
