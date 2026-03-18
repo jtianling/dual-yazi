@@ -33,6 +33,9 @@ impl Actor for Undo {
 				UndoOp::Move { ref pairs } => {
 					Self::undo_move(pairs).await.ok();
 				}
+				UndoOp::Trash { ref pairs } => {
+					Self::undo_trash(pairs).await.ok();
+				}
 			}
 		});
 		succ!();
@@ -99,6 +102,24 @@ impl Undo {
 				if let Some((from_p, from_n)) = from.pair() {
 					if let Ok(file) = File::new(from).await {
 						FilesOp::Upserting(from_p.into(), [(from_n.into(), file)].into()).emit();
+					}
+				}
+			}
+		}
+		Ok(())
+	}
+
+	async fn undo_trash(
+		pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)],
+	) -> Result<()> {
+		for (original, trash_path) in pairs {
+			if provider::rename(trash_path, original).await.is_ok() {
+				if let Some((trash_p, trash_n)) = trash_path.pair() {
+					FilesOp::Deleting(trash_p.into(), [trash_n.into()].into()).emit();
+				}
+				if let Some((orig_p, orig_n)) = original.pair() {
+					if let Ok(file) = File::new(original).await {
+						FilesOp::Upserting(orig_p.into(), [(orig_n.into(), file)].into()).emit();
 					}
 				}
 			}

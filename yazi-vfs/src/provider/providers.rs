@@ -213,7 +213,7 @@ impl<'a> Provider for Providers<'a> {
 		}
 	}
 
-	async fn trash(&self) -> io::Result<()> {
+	async fn trash(&self) -> io::Result<UrlBuf> {
 		match self {
 			Self::Local(p) => p.trash().await,
 			Self::Sftp(p) => p.trash().await,

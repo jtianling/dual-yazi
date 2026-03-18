@@ -184,7 +184,7 @@ pub trait Provider: Sized {
 
 	fn symlink_metadata(&self) -> impl Future<Output = io::Result<Cha>>;
 
-	fn trash(&self) -> impl Future<Output = io::Result<()>>;
+	fn trash(&self) -> impl Future<Output = io::Result<UrlBuf>>;
 
 	fn url(&self) -> Url<'_>;
 

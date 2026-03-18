@@ -89,6 +89,7 @@ pub enum Spark<'a> {
 	ToggleAll(yazi_parser::mgr::ToggleAllOpt),
 	Undo(yazi_parser::mgr::UndoOpt),
 	UndoPush(yazi_parser::mgr::UndoPushOpt),
+	UndoPushTrashPair(yazi_parser::mgr::UndoPushTrashPairOpt),
 	Unyank(yazi_parser::VoidOpt),
 	UpdateFiles(yazi_parser::mgr::UpdateFilesOpt),
 	UpdateMimes(yazi_parser::mgr::UpdateMimesOpt),
@@ -279,6 +280,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::ToggleAll(b) => b.into_lua(lua),
 			Self::Undo(b) => b.into_lua(lua),
 			Self::UndoPush(b) => b.into_lua(lua),
+			Self::UndoPushTrashPair(b) => b.into_lua(lua),
 			Self::Unyank(b) => b.into_lua(lua),
 			Self::UpdateFiles(b) => b.into_lua(lua),
 			Self::UpdateMimes(b) => b.into_lua(lua),
@@ -439,6 +441,7 @@ try_from_spark!(yazi_parser::mgr::ToggleAllOpt, mgr:toggle_all);
 try_from_spark!(yazi_parser::mgr::ToggleOpt, mgr:toggle);
 try_from_spark!(yazi_parser::mgr::UndoOpt, mgr:undo);
 try_from_spark!(yazi_parser::mgr::UndoPushOpt, mgr:undo_push);
+try_from_spark!(yazi_parser::mgr::UndoPushTrashPairOpt, mgr:undo_push_trash_pair);
 try_from_spark!(yazi_parser::mgr::RedoOpt, mgr:redo);
 try_from_spark!(yazi_parser::mgr::UpdateFilesOpt, mgr:update_files);
 try_from_spark!(yazi_parser::mgr::UpdateMimesOpt, mgr:update_mimes);

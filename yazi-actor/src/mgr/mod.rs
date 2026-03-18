@@ -56,6 +56,7 @@ yazi_macro::mod_flat!(
 	toggle_all
 	undo
 	undo_push
+	undo_push_trash_pair
 	unyank
 	update_files
 	update_mimes

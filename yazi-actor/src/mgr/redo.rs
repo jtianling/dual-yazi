@@ -2,6 +2,7 @@ use anyhow::Result;
 use yazi_fs::{File, FilesOp};
 use yazi_macro::succ;
 use yazi_parser::mgr::RedoOpt;
+use yazi_proxy::MgrProxy;
 use yazi_shared::{UndoOp, data::Data, url::UrlLike};
 use yazi_vfs::{VfsFile, provider};
 use yazi_watcher::WATCHER;
@@ -37,6 +38,9 @@ impl Actor for Redo {
 				UndoOp::Copy { .. } => unreachable!(),
 				UndoOp::Move { ref pairs } => {
 					Self::redo_move(pairs).await.ok();
+				}
+				UndoOp::Trash { ref pairs } => {
+					Self::redo_trash(pairs).await.ok();
 				}
 			}
 		});
@@ -99,6 +103,24 @@ impl Redo {
 					}
 				}
 			}
+		}
+		Ok(())
+	}
+
+	async fn redo_trash(
+		pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)],
+	) -> Result<()> {
+		let mut new_pairs = Vec::new();
+		for (original, _) in pairs {
+			if let Ok(new_trash_path) = provider::trash(original).await {
+				if let Some((orig_p, orig_n)) = original.pair() {
+					FilesOp::Deleting(orig_p.into(), [orig_n.into()].into()).emit();
+				}
+				new_pairs.push((original.clone(), new_trash_path));
+			}
+		}
+		if !new_pairs.is_empty() {
+			MgrProxy::undo_push(UndoOp::Trash { pairs: new_pairs });
 		}
 		Ok(())
 	}

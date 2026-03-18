@@ -88,8 +88,9 @@ pub(crate) struct HookInDelete {
 // --- Trash
 #[derive(Debug)]
 pub(crate) struct HookInTrash {
-	pub(crate) id:     Id,
-	pub(crate) target: UrlBuf,
+	pub(crate) id:         Id,
+	pub(crate) target:     UrlBuf,
+	pub(crate) trash_path: Option<UrlBuf>,
 }
 
 // --- Download

@@ -124,6 +124,7 @@ impl<'a> Executor<'a> {
 		on!(rename);
 		on!(undo);
 		on!(undo_push);
+		on!(undo_push_trash_pair);
 		on!(copy);
 		on!(shell);
 		on!(hidden);

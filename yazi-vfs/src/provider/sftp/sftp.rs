@@ -208,7 +208,7 @@ impl<'a> Provider for Sftp<'a> {
 		Ok(Cha::try_from((self.path.file_name().unwrap_or_default(), &attrs))?.0)
 	}
 
-	async fn trash(&self) -> io::Result<()> {
+	async fn trash(&self) -> io::Result<UrlBuf> {
 		Err(io::Error::new(io::ErrorKind::Unsupported, "Trash not supported"))
 	}
 

@@ -6,4 +6,5 @@ pub enum UndoOp {
 	Create { target: UrlBuf, is_dir: bool },
 	Copy { pairs: Vec<(UrlBuf, UrlBuf)> },
 	Move { pairs: Vec<(UrlBuf, UrlBuf)> },
+	Trash { pairs: Vec<(UrlBuf, UrlBuf)> },
 }

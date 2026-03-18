@@ -298,8 +298,8 @@ impl File {
 	}
 
 	pub(crate) async fn trash_do(&self, task: FileInTrash) -> Result<(), FileOutTrash> {
-		ctx!(task, provider::trash(&task.target).await)?;
-		Ok(self.ops.out(task.id, FileOutTrash::Succ))
+		let trash_path = ctx!(task, provider::trash(&task.target).await)?;
+		Ok(self.ops.out(task.id, FileOutTrash::Succ(trash_path)))
 	}
 
 	pub(crate) async fn download(&self, task: FileInDownload) -> Result<(), FileOutDownload> {

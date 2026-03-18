@@ -78,6 +78,10 @@ impl MgrProxy {
 		emit!(Call(relay!(mgr:undo_push).with_any("op", op)));
 	}
 
+	pub fn undo_push_trash_pair(original: UrlBuf, trash_path: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_trash_pair).with_any("original", original).with_any("trash_path", trash_path)));
+	}
+
 	pub fn watch() {
 		emit!(Call(relay!(mgr:watch)));
 	}

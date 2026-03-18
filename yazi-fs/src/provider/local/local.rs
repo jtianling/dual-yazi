@@ -186,7 +186,7 @@ impl<'a> Provider for Local<'a> {
 		))
 	}
 
-	async fn trash(&self) -> io::Result<()> {
+	async fn trash(&self) -> io::Result<UrlBuf> {
 		let path = self.path.to_owned();
 		tokio::task::spawn_blocking(move || {
 			#[cfg(target_os = "android")]
@@ -195,14 +195,108 @@ impl<'a> Provider for Local<'a> {
 			}
 			#[cfg(target_os = "macos")]
 			{
-				use trash::{TrashContext, macos::{DeleteMethod, TrashContextExtMacos}};
-				let mut ctx = TrashContext::default();
-				ctx.set_delete_method(DeleteMethod::NsFileManager);
-				ctx.delete(path).map_err(io::Error::other)
+				use std::ffi::{CStr, CString, c_char};
+				use std::os::unix::ffi::OsStrExt;
+				use std::path::PathBuf;
+				use objc2::msg_send;
+				use objc2::runtime::{AnyClass, AnyObject};
+
+				let path_cstr = CString::new(path.as_os_str().as_bytes())
+					.map_err(|e| io::Error::other(format!("Invalid path: {e}")))?;
+
+				unsafe {
+					let cls_str = AnyClass::get(c"NSString").unwrap();
+					let cls_url = AnyClass::get(c"NSURL").unwrap();
+					let cls_fm = AnyClass::get(c"NSFileManager").unwrap();
+
+					#[allow(unexpected_cfgs)]
+					let ns_path: *const AnyObject =
+						msg_send![cls_str, stringWithUTF8String: path_cstr.as_ptr()];
+					#[allow(unexpected_cfgs)]
+					let ns_url: *const AnyObject = msg_send![cls_url, fileURLWithPath: ns_path];
+					#[allow(unexpected_cfgs)]
+					let fm: *const AnyObject = msg_send![cls_fm, defaultManager];
+
+					let mut result_url: *const AnyObject = std::ptr::null();
+					let mut error: *const AnyObject = std::ptr::null();
+					#[allow(unexpected_cfgs)]
+					let success: bool = msg_send![
+						fm,
+						trashItemAtURL: ns_url,
+						resultingItemURL: &mut result_url,
+						error: &mut error
+					];
+
+					if !success {
+						if !error.is_null() {
+							#[allow(unexpected_cfgs)]
+							let desc: *const AnyObject = msg_send![error, localizedDescription];
+							#[allow(unexpected_cfgs)]
+							let cstr: *const c_char = msg_send![desc, UTF8String];
+							let err_msg = CStr::from_ptr(cstr).to_string_lossy();
+							return Err(io::Error::other(format!("Trash failed: {err_msg}")));
+						}
+						return Err(io::Error::other("Trash operation failed"));
+					}
+
+					if result_url.is_null() {
+						return Err(io::Error::other("Trash succeeded but no resulting URL"));
+					}
+
+					#[allow(unexpected_cfgs)]
+					let ns_result_path: *const AnyObject = msg_send![result_url, path];
+					if ns_result_path.is_null() {
+						return Err(io::Error::other("Cannot get path from trash URL"));
+					}
+					#[allow(unexpected_cfgs)]
+					let cstr: *const c_char = msg_send![ns_result_path, UTF8String];
+					let trash_path = PathBuf::from(std::ffi::OsStr::from_bytes(
+						CStr::from_ptr(cstr).to_bytes(),
+					));
+
+					Ok(UrlBuf::from(trash_path))
+				}
 			}
 			#[cfg(all(not(target_os = "macos"), not(target_os = "android")))]
 			{
-				trash::delete(path).map_err(io::Error::other)
+				use std::collections::HashSet;
+
+				let home_trash = dirs::data_dir()
+					.or_else(|| dirs::home_dir().map(|h| h.join(".local/share")))
+					.map(|d| d.join("Trash"))
+					.ok_or_else(|| io::Error::other("Cannot determine trash directory"))?;
+
+				let info_dir = home_trash.join("info");
+				let files_dir = home_trash.join("files");
+
+				// Snapshot existing trashinfo entries before deletion
+				let before: HashSet<std::ffi::OsString> = std::fs::read_dir(&info_dir)
+					.ok()
+					.into_iter()
+					.flatten()
+					.filter_map(|e| e.ok())
+					.map(|e| e.file_name())
+					.collect();
+
+				trash::delete(&path).map_err(io::Error::other)?;
+
+				// Find the new trashinfo entry
+				if let Ok(entries) = std::fs::read_dir(&info_dir) {
+					for entry in entries.filter_map(|e| e.ok()) {
+						let name = entry.file_name();
+						if !before.contains(&name) {
+							if let Some(stem) = name.to_string_lossy().strip_suffix(".trashinfo") {
+								return Ok(UrlBuf::from(files_dir.join(stem)));
+							}
+						}
+					}
+				}
+
+				// Fallback: construct from filename
+				let filename = path
+					.file_name()
+					.ok_or_else(|| io::Error::other("Cannot determine filename"))?;
+				Ok(UrlBuf::from(files_dir.join(filename)))
 			}
 		})
 		.await?
