@@ -30,7 +30,7 @@ impl Dependency {
 			self.delete_sources().await?;
 		}
 
-		Local::regular(&to).remove_dir_clean().await;
+		let _ = Local::regular(&to).remove_dir_clean().await;
 		self.hash = self.hash().await?;
 		res2?;
 		res1?;

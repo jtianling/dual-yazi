@@ -28,11 +28,11 @@ yazi_macro::mod_flat!(
 	move_to
 	open
 	open_do
-	paste
 	pane_focus
 	pane_only
 	pane_preview
 	pane_switch
+	paste
 	peek
 	quit
 	refresh

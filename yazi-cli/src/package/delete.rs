@@ -35,7 +35,7 @@ impl Dependency {
 			Err(e) => Err(e).context(format!("failed to read `{}`", assets.display()))?,
 		};
 
-		Local::regular(&assets).remove_dir_clean().await;
+		let _ = Local::regular(&assets).remove_dir_clean().await;
 		Ok(())
 	}
 
