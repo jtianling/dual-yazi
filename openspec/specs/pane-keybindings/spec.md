@@ -77,12 +77,16 @@ The system SHALL bind `Ctrl-w p` to the `pane_preview` action, which toggles the
 - **THEN** the dual-pane layout toggles between directory mode (parent + current) and preview mode (current + preview)
 
 ### Requirement: Tab action disabled in dual-pane mode
-The system SHALL disable `tab_create`, `tab_close`, `tab_switch`, `tab_swap`, and `tab_rename` actions.  These actions SHALL be no-ops when invoked.
+The system SHALL support `tab_create`, `tab_close`, `tab_switch`, `tab_swap` actions in dual-pane mode, operating on the active pane's tab list.  The `t` key SHALL be bound to `tab_create --current` as a single key press (not a chord).  The `tab_rename` action SHALL have no default keybinding but SHALL remain available for user customization.
 
-#### Scenario: Tab create is no-op
-- **WHEN** the user or a plugin invokes tab_create
-- **THEN** no new tab is created and the system continues normally
+#### Scenario: Single key t creates tab
+- **WHEN** the user presses `t`
+- **THEN** a new tab is immediately created in the active pane's current working directory
 
-#### Scenario: Tab close is no-op
-- **WHEN** the user or a plugin invokes tab_close
-- **THEN** no pane is closed and the system continues normally
+#### Scenario: r key renames file
+- **WHEN** the user presses `r`
+- **THEN** the rename action is invoked for the selected file(s), not tab_rename
+
+#### Scenario: tab_rename has no default binding
+- **WHEN** the user inspects the default keymap
+- **THEN** there is no keybinding for `tab_rename --interactive`
