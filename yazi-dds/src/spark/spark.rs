@@ -65,6 +65,7 @@ pub enum Spark<'a> {
 	Paste(yazi_parser::mgr::PasteOpt),
 	Peek(yazi_parser::mgr::PeekOpt),
 	Quit(yazi_parser::app::QuitOpt),
+	Redo(yazi_parser::mgr::RedoOpt),
 	Refresh(yazi_parser::VoidOpt),
 	Remove(yazi_parser::mgr::RemoveOpt),
 	RemoveDo(yazi_parser::mgr::RemoveOpt),
@@ -86,6 +87,8 @@ pub enum Spark<'a> {
 	TabSwitch(yazi_parser::mgr::TabSwitchOpt),
 	Toggle(yazi_parser::mgr::ToggleOpt),
 	ToggleAll(yazi_parser::mgr::ToggleAllOpt),
+	Undo(yazi_parser::mgr::UndoOpt),
+	UndoPush(yazi_parser::mgr::UndoPushOpt),
 	Unyank(yazi_parser::VoidOpt),
 	UpdateFiles(yazi_parser::mgr::UpdateFilesOpt),
 	UpdateMimes(yazi_parser::mgr::UpdateMimesOpt),
@@ -252,6 +255,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::Paste(b) => b.into_lua(lua),
 			Self::Peek(b) => b.into_lua(lua),
 			Self::Quit(b) => b.into_lua(lua),
+			Self::Redo(b) => b.into_lua(lua),
 			Self::Refresh(b) => b.into_lua(lua),
 			Self::Remove(b) => b.into_lua(lua),
 			Self::RemoveDo(b) => b.into_lua(lua),
@@ -273,6 +277,8 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::TabSwitch(b) => b.into_lua(lua),
 			Self::Toggle(b) => b.into_lua(lua),
 			Self::ToggleAll(b) => b.into_lua(lua),
+			Self::Undo(b) => b.into_lua(lua),
+			Self::UndoPush(b) => b.into_lua(lua),
 			Self::Unyank(b) => b.into_lua(lua),
 			Self::UpdateFiles(b) => b.into_lua(lua),
 			Self::UpdateMimes(b) => b.into_lua(lua),
@@ -431,6 +437,9 @@ try_from_spark!(yazi_parser::mgr::TabRenameOpt, mgr:tab_rename);
 try_from_spark!(yazi_parser::mgr::TabSwitchOpt, mgr:tab_switch);
 try_from_spark!(yazi_parser::mgr::ToggleAllOpt, mgr:toggle_all);
 try_from_spark!(yazi_parser::mgr::ToggleOpt, mgr:toggle);
+try_from_spark!(yazi_parser::mgr::UndoOpt, mgr:undo);
+try_from_spark!(yazi_parser::mgr::UndoPushOpt, mgr:undo_push);
+try_from_spark!(yazi_parser::mgr::RedoOpt, mgr:redo);
 try_from_spark!(yazi_parser::mgr::UpdateFilesOpt, mgr:update_files);
 try_from_spark!(yazi_parser::mgr::UpdateMimesOpt, mgr:update_mimes);
 try_from_spark!(yazi_parser::mgr::UpdatePagedOpt, mgr:update_paged);

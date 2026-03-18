@@ -35,6 +35,7 @@ yazi_macro::mod_flat!(
 	paste
 	peek
 	quit
+	redo
 	refresh
 	remove
 	rename
@@ -53,6 +54,8 @@ yazi_macro::mod_flat!(
 	tab_switch
 	toggle
 	toggle_all
+	undo
+	undo_push
 	unyank
 	update_files
 	update_mimes

@@ -117,10 +117,13 @@ impl<'a> Executor<'a> {
 		on!(move_to);
 		on!(link);
 		on!(hardlink);
+		on!(redo);
 		on!(remove);
 		on!(remove_do);
 		on!(create);
 		on!(rename);
+		on!(undo);
+		on!(undo_push);
 		on!(copy);
 		on!(shell);
 		on!(hidden);
