@@ -1,6 +1,6 @@
 use yazi_macro::{emit, relay};
 use yazi_parser::mgr::{DisplaceDoOpt, FilterOpt, FindDoOpt, OpenDoOpt, OpenOpt, SearchOpt, UpdatePeekedOpt, UpdateSpottedOpt};
-use yazi_shared::{Id, SStr, url::UrlBuf};
+use yazi_shared::{Id, SStr, UndoOp, url::UrlBuf};
 
 pub struct MgrProxy;
 
@@ -72,6 +72,14 @@ impl MgrProxy {
 		I: IntoIterator<Item = UrlBuf>,
 	{
 		emit!(Call(relay!(mgr:upload).with_seq(urls)));
+	}
+
+	pub fn undo_push(op: UndoOp) {
+		emit!(Call(relay!(mgr:undo_push).with_any("op", op)));
+	}
+
+	pub fn undo_push_trash_pair(original: UrlBuf, trash_path: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_trash_pair).with_any("original", original).with_any("trash_path", trash_path)));
 	}
 
 	pub fn watch() {

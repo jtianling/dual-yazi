@@ -61,6 +61,9 @@ impl Hook {
 	pub(crate) async fn trash(&self, task: HookInTrash) {
 		let intact = self.ongoing.lock().intact(task.id);
 		if intact {
+			if let Some(trash_path) = task.trash_path {
+				yazi_proxy::MgrProxy::undo_push_trash_pair(task.target.clone(), trash_path);
+			}
 			TasksProxy::update_succeed([&task.target]);
 			Pump::push_trash(task.target);
 		}

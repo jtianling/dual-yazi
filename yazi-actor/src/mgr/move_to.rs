@@ -2,7 +2,7 @@ use anyhow::Result;
 use yazi_core::mgr::Yanked;
 use yazi_macro::{act, succ};
 use yazi_parser::mgr::MoveToOpt;
-use yazi_shared::{data::Data, url::UrlBufCov};
+use yazi_shared::{UndoOp, data::Data, url::{UrlBufCov, UrlLike}};
 
 use crate::{Actor, Ctx};
 
@@ -23,7 +23,16 @@ impl Actor for MoveTo {
 		}
 
 		let dest = cx.tabs().other().cwd().clone();
+
+		let pairs: Vec<_> = yanked
+			.iter()
+			.filter_map(|u| {
+				u.name().map(|n| dest.try_join(n)).and_then(|r| r.ok()).map(|to| ((**u).clone(), to))
+			})
+			.collect();
+
 		cx.core.tasks.file_cut(&yanked, &dest, opt.force);
+		cx.mgr.undo.push(UndoOp::Move { pairs });
 		act!(mgr:escape_select, cx)?;
 		act!(mgr:unyank, cx)
 	}

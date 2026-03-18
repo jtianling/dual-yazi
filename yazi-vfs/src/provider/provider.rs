@@ -247,7 +247,7 @@ where
 	Providers::new(url.as_url()).await?.symlink_metadata().await
 }
 
-pub async fn trash<U>(url: U) -> io::Result<()>
+pub async fn trash<U>(url: U) -> io::Result<UrlBuf>
 where
 	U: AsUrl,
 {

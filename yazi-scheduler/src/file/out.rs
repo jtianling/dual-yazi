@@ -346,7 +346,7 @@ impl FileOutDeleteDo {
 // --- Trash
 #[derive(Debug)]
 pub(crate) enum FileOutTrash {
-	Succ,
+	Succ(yazi_shared::url::UrlBuf),
 	Fail(String),
 	Clean,
 }
@@ -359,8 +359,11 @@ impl FileOutTrash {
 	pub(crate) fn reduce(self, task: &mut Task) {
 		let TaskProg::FileTrash(prog) = &mut task.prog else { return };
 		match self {
-			Self::Succ => {
+			Self::Succ(trash_path) => {
 				prog.state = Some(true);
+				if let Some(crate::hook::HookIn::Trash(ref mut hook)) = task.hook {
+					hook.trash_path = Some(trash_path);
+				}
 			}
 			Self::Fail(reason) => {
 				prog.state = Some(false);

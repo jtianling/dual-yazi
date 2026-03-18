@@ -25,6 +25,7 @@ yazi_macro::mod_flat!(
 	pane_switch
 	paste
 	peek
+	redo
 	remove
 	rename
 	reveal
@@ -40,6 +41,9 @@ yazi_macro::mod_flat!(
 	tab_switch
 	toggle
 	toggle_all
+	undo
+	undo_push
+	undo_push_trash_pair
 	update_files
 	update_mimes
 	update_paged

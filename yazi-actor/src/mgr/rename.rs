@@ -5,7 +5,7 @@ use yazi_fs::{File, FilesOp};
 use yazi_macro::{act, err, ok_or_not_found, succ};
 use yazi_parser::mgr::RenameOpt;
 use yazi_proxy::{ConfirmProxy, InputProxy, MgrProxy};
-use yazi_shared::{Id, data::Data, url::{UrlBuf, UrlLike}};
+use yazi_shared::{Id, UndoOp, data::Data, url::{UrlBuf, UrlLike}};
 use yazi_vfs::{VfsFile, maybe_exists, provider};
 use yazi_watcher::WATCHER;
 
@@ -91,6 +91,7 @@ impl Rename {
 			FilesOp::Upserting(new_p.into(), [(new_n.into(), file)].into()).emit();
 		}
 
+		MgrProxy::undo_push(UndoOp::Rename { old: old.clone(), new: new.clone() });
 		MgrProxy::reveal(&new);
 		err!(Pubsub::pub_after_rename(tab, &old, &new));
 		Ok(())
