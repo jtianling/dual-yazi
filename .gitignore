@@ -12,3 +12,8 @@ result-*
 .vscode/
 
 *.snap
+
+.claude
+.codex
+test/
+.mcp.json
