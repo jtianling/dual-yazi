@@ -7,18 +7,22 @@ Defines the visual layout and rendering behavior for the dual-pane file manager 
 ## Requirements
 
 ### Requirement: Dual pane initialization
-The system SHALL initialize with exactly two panes on startup.  The left pane (index 0) SHALL be the active pane by default.  Both panes SHALL start in the user's current working directory.
+The system SHALL initialize with exactly two panes on startup.  Each pane SHALL contain one tab.  The left pane (index 0) SHALL be the active pane by default.  Both panes SHALL start in the user's current working directory.
 
 #### Scenario: Application startup
 - **WHEN** the application starts
-- **THEN** two panes are displayed side-by-side, left pane is active, both showing the current working directory
+- **THEN** two panes are displayed side-by-side, each with one tab, left pane is active, both showing the current working directory
 
 ### Requirement: Dual pane layout rendering
-The system SHALL render two panes horizontally with a vertical separator between them when in dual-pane mode. Each pane SHALL be a self-contained vertical layout consisting of a Header row, the Tab content area, and a Status bar row. When in single-pane mode, the system SHALL render only the active pane at full width using the user's configured ratio (default `[1, 4, 3]`) with root-level Header and Status. Each pane in dual-pane mode SHALL use ratio `[1, 2, 0]` by default (parent + current, no preview). When preview_pane mode is enabled, each pane SHALL use ratio `[0, 1, 1]` (current + preview, no parent). The two panes SHALL each occupy approximately 50% of the available width, minus the separator. The root layout in dual-pane mode SHALL allocate the full screen height to the DualPane component (no root-level Header or Status rows).
+The system SHALL render two panes horizontally with a vertical separator between them when in dual-pane mode. Each pane SHALL be a self-contained vertical layout consisting of: a Header row, an optional Tab bar (shown when the pane has more than one tab), the Tab content area, and a Status bar row. When in single-pane mode, the system SHALL render only the active pane at full width using the user's configured ratio (default `[1, 4, 3]`) with root-level Header, optional Tab bar, and Status. Each pane in dual-pane mode SHALL use ratio `[1, 2, 0]` by default (parent + current, no preview). When preview_pane mode is enabled, each pane SHALL use ratio `[0, 1, 1]` (current + preview, no parent). The two panes SHALL each occupy approximately 50% of the available width, minus the separator. The root layout in dual-pane mode SHALL allocate the full screen height to the DualPane component (no root-level Header or Status rows).
 
 #### Scenario: Normal terminal width in dual-pane mode
 - **WHEN** the terminal has sufficient width (>= 80 columns) and the system is in dual-pane mode with preview_pane disabled
 - **THEN** two panes are rendered side-by-side, each with its own header, parent and current columns, and status bar, separated by a vertical line
+
+#### Scenario: Dual-pane with multiple tabs in one pane
+- **WHEN** the system is in dual-pane mode and the left pane has 3 tabs while the right pane has 1 tab
+- **THEN** the left pane renders header, tab bar, content, and status; the right pane renders header, content, and status (no tab bar)
 
 #### Scenario: Dual-pane preview mode rendering
 - **WHEN** the system is in dual-pane mode with preview_pane enabled
@@ -26,7 +30,7 @@ The system SHALL render two panes horizontally with a vertical separator between
 
 #### Scenario: Single-pane mode rendering
 - **WHEN** the system is in single-pane mode
-- **THEN** only the active pane is rendered at full width with root-level header, parent, current, and preview columns, and root-level status bar
+- **THEN** only the active pane is rendered at full width with root-level header, optional tab bar, parent, current, and preview columns, and root-level status bar
 
 #### Scenario: Ratio configuration
 - **WHEN** the user configures a custom ratio (e.g., `[1, 2, 1]`)
@@ -49,13 +53,6 @@ The system SHALL render a vertical separator line between the two panes.  The se
 #### Scenario: Separator display
 - **WHEN** two panes are displayed
 - **THEN** a vertical line separator (│) is rendered between them
-
-### Requirement: Tab bar removal
-The system SHALL NOT display a tab bar.  The area previously used by the tab bar SHALL be allocated to the pane content area, whether in dual-pane or single-pane mode.
-
-#### Scenario: No tab bar displayed
-- **WHEN** the application is running in either mode
-- **THEN** no tab bar is visible, and the full vertical space (minus header and status) is used for pane content
 
 ### Requirement: Header and status bar adaptation
 In dual-pane mode, each pane SHALL have its own independent Header and Status bar. The Header SHALL display the directory path and file count for that specific pane. The Status bar SHALL display the mode, file name, permissions, and position for that specific pane. In single-pane mode, a single Header and Status bar SHALL be rendered at the root level for the active pane, as before.

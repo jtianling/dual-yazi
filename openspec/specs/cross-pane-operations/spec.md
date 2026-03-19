@@ -7,7 +7,7 @@ Defines file operations that work across panes, including direct copy/move to th
 ## Requirements
 
 ### Requirement: Copy to other pane (F5)
-The system SHALL provide a `copy_to` action that copies the selected files (or hovered file if none selected) from the active pane directly to the other pane's current working directory.  This operation SHALL NOT use the yank register.  After the operation, the selection state SHALL be cleared.
+The system SHALL provide a `copy_to` action that copies the selected files (or hovered file if none selected) from the active pane's active tab to the other pane's active tab's current working directory.  This operation SHALL NOT use the yank register.  After the operation, the selection state SHALL be cleared.
 
 #### Scenario: Copy single file to other pane
 - **WHEN** the user has no files selected and the cursor is on "file.txt" in the left pane, and the right pane is in /tmp
@@ -21,8 +21,16 @@ The system SHALL provide a `copy_to` action that copies the selected files (or h
 - **WHEN** the user has files selected and presses F5
 - **THEN** the files are copied and the selection state is cleared in the source pane
 
+#### Scenario: Copy files to other pane's active tab
+- **WHEN** the user selects files in the left pane's active tab and presses F5
+- **THEN** the files are copied to the right pane's active tab's current working directory
+
+#### Scenario: Copy when other pane has multiple tabs
+- **WHEN** the right pane has 3 tabs with tab 2 active, and the user copies from the left pane
+- **THEN** the files are copied to the right pane's tab 2's current working directory (not tab 1 or tab 3)
+
 ### Requirement: Move to other pane (F6)
-The system SHALL provide a `move_to` action that moves the selected files (or hovered file if none selected) from the active pane directly to the other pane's current working directory.  This operation SHALL NOT use the yank register.  After the operation, the selection state SHALL be cleared.
+The system SHALL provide a `move_to` action that moves the selected files (or hovered file if none selected) from the active pane's active tab to the other pane's active tab's current working directory.  This operation SHALL NOT use the yank register.  After the operation, the selection state SHALL be cleared.
 
 #### Scenario: Move single file to other pane
 - **WHEN** the user has no files selected and the cursor is on "file.txt" in the left pane, and the right pane is in /tmp
@@ -31,6 +39,14 @@ The system SHALL provide a `move_to` action that moves the selected files (or ho
 #### Scenario: Move multiple selected files to other pane
 - **WHEN** the user has 3 files selected in the left pane, and the right pane is in /home/user/archive
 - **THEN** pressing F6 moves all 3 files to /home/user/archive/
+
+#### Scenario: Move files to other pane's active tab
+- **WHEN** the user selects files in the left pane's active tab and presses F6
+- **THEN** the files are moved to the right pane's active tab's current working directory
+
+#### Scenario: Move when other pane has multiple tabs
+- **WHEN** the left pane has 2 tabs with tab 1 active, and the right pane has 3 tabs with tab 3 active, and the user moves from the left pane
+- **THEN** the files are moved to the right pane's tab 3's current working directory
 
 ### Requirement: Create directory (F7)
 The system SHALL bind F7 to the existing `create` action, providing MC-compatible directory creation.
