@@ -40,6 +40,13 @@ impl Actor for Open {
 			succ!();
 		}
 
+		if !opt.interactive
+			&& opt.targets.len() == 1
+			&& cx.hovered().is_some_and(|h| h.is_dir())
+		{
+			return act!(mgr:enter, cx);
+		}
+
 		let todo: Vec<_> = opt
 			.targets
 			.iter()
