@@ -37,14 +37,15 @@ impl HookIn {
 // --- Copy
 #[derive(Debug)]
 pub(crate) struct HookInOutCopy {
-	pub(crate) id:   Id,
-	pub(crate) from: UrlBuf,
-	pub(crate) to:   UrlBuf,
+	pub(crate) id:          Id,
+	pub(crate) from:        UrlBuf,
+	pub(crate) to:          UrlBuf,
+	pub(crate) overwritten: Option<(UrlBuf, UrlBuf)>,
 }
 
 impl From<&FileInCopy> for HookInOutCopy {
 	fn from(value: &FileInCopy) -> Self {
-		Self { id: value.id, from: value.from.clone(), to: value.to.clone() }
+		Self { id: value.id, from: value.from.clone(), to: value.to.clone(), overwritten: None }
 	}
 }
 
@@ -59,14 +60,15 @@ impl HookInOutCopy {
 // --- Cut
 #[derive(Debug)]
 pub(crate) struct HookInOutCut {
-	pub(crate) id:   Id,
-	pub(crate) from: UrlBuf,
-	pub(crate) to:   UrlBuf,
+	pub(crate) id:          Id,
+	pub(crate) from:        UrlBuf,
+	pub(crate) to:          UrlBuf,
+	pub(crate) overwritten: Option<(UrlBuf, UrlBuf)>,
 }
 
 impl From<&FileInCut> for HookInOutCut {
 	fn from(value: &FileInCut) -> Self {
-		Self { id: value.id, from: value.from.clone(), to: value.to.clone() }
+		Self { id: value.id, from: value.from.clone(), to: value.to.clone(), overwritten: None }
 	}
 }
 

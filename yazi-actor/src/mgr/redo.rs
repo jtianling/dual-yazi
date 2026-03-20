@@ -19,9 +19,30 @@ impl Actor for Redo {
 	fn act(cx: &mut Ctx, _opt: Self::Options) -> Result<Data> {
 		let Some(entry) = cx.mgr.undo.redo() else { succ!() };
 
-		if let UndoOp::Copy { ref pairs } = entry.op {
+		if let UndoOp::Copy { ref pairs, .. } = entry.op {
+			// Clear pairs/overwritten on the undo stack entry; hooks will repopulate
+			if let Some(top) = cx.mgr.undo.undo_stack_last_mut() {
+				if let UndoOp::Copy { pairs: ref mut p, overwritten: ref mut o } = top.op {
+					p.clear();
+					o.clear();
+				}
+			}
 			for (from, to) in pairs {
 				cx.core.tasks.scheduler.file_copy(from.clone(), to.clone(), true, false);
+			}
+			succ!();
+		}
+
+		if let UndoOp::Move { ref pairs, .. } = entry.op {
+			// Clear pairs/overwritten on the undo stack entry; hooks will repopulate
+			if let Some(top) = cx.mgr.undo.undo_stack_last_mut() {
+				if let UndoOp::Move { pairs: ref mut p, overwritten: ref mut o } = top.op {
+					p.clear();
+					o.clear();
+				}
+			}
+			for (from, to) in pairs {
+				cx.core.tasks.scheduler.file_cut(from.clone(), to.clone(), true);
 			}
 			succ!();
 		}
@@ -35,10 +56,7 @@ impl Actor for Redo {
 				UndoOp::Create { ref target, is_dir } => {
 					Self::redo_create(target, is_dir).await.ok();
 				}
-				UndoOp::Copy { .. } => unreachable!(),
-				UndoOp::Move { ref pairs } => {
-					Self::redo_move(pairs).await.ok();
-				}
+				UndoOp::Copy { .. } | UndoOp::Move { .. } => unreachable!(),
 				UndoOp::Trash { ref pairs } => {
 					Self::redo_trash(pairs).await.ok();
 				}
@@ -84,24 +102,6 @@ impl Redo {
 		if let Some((parent, urn)) = target.pair() {
 			if let Ok(file) = File::new(target).await {
 				FilesOp::Upserting(parent.into(), [(urn.into(), file)].into()).emit();
-			}
-		}
-		Ok(())
-	}
-
-	async fn redo_move(
-		pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)],
-	) -> Result<()> {
-		for (from, to) in pairs {
-			if provider::rename(from, to).await.is_ok() {
-				if let Some((from_p, from_n)) = from.pair() {
-					FilesOp::Deleting(from_p.into(), [from_n.into()].into()).emit();
-				}
-				if let Some((to_p, to_n)) = to.pair() {
-					if let Ok(file) = File::new(to).await {
-						FilesOp::Upserting(to_p.into(), [(to_n.into(), file)].into()).emit();
-					}
-				}
 			}
 		}
 		Ok(())

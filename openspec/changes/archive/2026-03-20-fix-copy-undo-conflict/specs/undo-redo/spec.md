@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Undo stack records file operations
 The system SHALL maintain an undo stack (max 20 entries) at the Mgr level that records completed file operations. When a new operation is recorded, the redo stack SHALL be cleared. When the stack exceeds 20 entries, the oldest entry SHALL be dropped.

@@ -27,13 +27,20 @@ impl File {
 	pub(crate) async fn copy(&self, mut task: FileInCopy) -> Result<(), FileOutCopy> {
 		let id = task.id;
 
-		if !task.force {
-			task.to = unique_file(mem::take(&mut task.to), task.init().await?.is_dir())
-				.await
-				.context("Cannot determine unique destination name")?;
-		}
+		let overwritten = if task.force && maybe_exists(&task.to).await {
+			provider::trash(&task.to).await.ok().map(|trash_path| (task.to.clone(), trash_path))
+		} else {
+			if !task.force {
+				task.to = unique_file(mem::take(&mut task.to), task.init().await?.is_dir())
+					.await
+					.context("Cannot determine unique destination name")?;
+			}
+			None
+		};
 
-		self.ops.out(id, HookInOutCopy::from(&task));
+		let mut hook = HookInOutCopy::from(&task);
+		hook.overwritten = overwritten;
+		self.ops.out(id, hook);
 		super::traverse::<FileOutCopy, _, _, _, _, _>(
 			task,
 			async |dir| match provider::create_dir(dir).await {
@@ -90,13 +97,20 @@ impl File {
 	pub(crate) async fn cut(&self, mut task: FileInCut) -> Result<(), FileOutCut> {
 		let id = task.id;
 
-		if !task.force {
-			task.to = unique_file(mem::take(&mut task.to), task.init().await?.is_dir())
-				.await
-				.context("Cannot determine unique destination name")?;
-		}
+		let overwritten = if task.force && maybe_exists(&task.to).await {
+			provider::trash(&task.to).await.ok().map(|trash_path| (task.to.clone(), trash_path))
+		} else {
+			if !task.force {
+				task.to = unique_file(mem::take(&mut task.to), task.init().await?.is_dir())
+					.await
+					.context("Cannot determine unique destination name")?;
+			}
+			None
+		};
 
-		self.ops.out(id, HookInOutCut::from(&task));
+		let mut hook = HookInOutCut::from(&task);
+		hook.overwritten = overwritten;
+		self.ops.out(id, hook);
 		if !task.follow && ok_or_not_found(provider::rename(&task.from, &task.to).await).is_ok() {
 			return Ok(self.ops.out(id, FileOutCut::Succ));
 		}

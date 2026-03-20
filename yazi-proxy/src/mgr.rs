@@ -82,6 +82,22 @@ impl MgrProxy {
 		emit!(Call(relay!(mgr:undo_push_trash_pair).with_any("original", original).with_any("trash_path", trash_path)));
 	}
 
+	pub fn undo_push_copy_pair(from: UrlBuf, to: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_copy_pair).with_any("from", from).with_any("to", to)));
+	}
+
+	pub fn undo_push_move_pair(from: UrlBuf, to: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_move_pair).with_any("from", from).with_any("to", to)));
+	}
+
+	pub fn undo_push_copy_overwritten(original: UrlBuf, trash_path: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_copy_overwritten).with_any("original", original).with_any("trash_path", trash_path)));
+	}
+
+	pub fn undo_push_move_overwritten(original: UrlBuf, trash_path: UrlBuf) {
+		emit!(Call(relay!(mgr:undo_push_move_overwritten).with_any("original", original).with_any("trash_path", trash_path)));
+	}
+
 	pub fn watch() {
 		emit!(Call(relay!(mgr:watch)));
 	}

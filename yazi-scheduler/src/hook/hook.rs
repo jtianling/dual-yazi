@@ -30,6 +30,10 @@ impl Hook {
 			return self.ops.out(task.id, FileOutCut::Clean(Ok(())));
 		}
 
+		yazi_proxy::MgrProxy::undo_push_move_pair(task.from.clone(), task.to.clone());
+		if let Some((original, trash_path)) = task.overwritten {
+			yazi_proxy::MgrProxy::undo_push_move_overwritten(original, trash_path);
+		}
 		let result = ok_or_not_found(provider::remove_dir_clean(&task.from).await);
 		TasksProxy::update_succeed([&task.to, &task.from]);
 		Pump::push_move(task.from, task.to);
@@ -39,6 +43,10 @@ impl Hook {
 
 	pub(crate) async fn copy(&self, task: HookInOutCopy) {
 		if self.ongoing.lock().intact(task.id) {
+			yazi_proxy::MgrProxy::undo_push_copy_pair(task.from.clone(), task.to.clone());
+			if let Some((original, trash_path)) = task.overwritten {
+				yazi_proxy::MgrProxy::undo_push_copy_overwritten(original, trash_path);
+			}
 			TasksProxy::update_succeed([&task.to]);
 			Pump::push_duplicate(task.from, task.to);
 		}

@@ -27,11 +27,11 @@ impl Actor for Undo {
 				UndoOp::Create { ref target, is_dir } => {
 					Self::undo_create(target, is_dir).await.ok();
 				}
-				UndoOp::Copy { ref pairs } => {
-					Self::undo_copy(pairs).await.ok();
+				UndoOp::Copy { ref pairs, ref overwritten } => {
+					Self::undo_copy(pairs, overwritten).await.ok();
 				}
-				UndoOp::Move { ref pairs } => {
-					Self::undo_move(pairs).await.ok();
+				UndoOp::Move { ref pairs, ref overwritten } => {
+					Self::undo_move(pairs, overwritten).await.ok();
 				}
 				UndoOp::Trash { ref pairs } => {
 					Self::undo_trash(pairs).await.ok();
@@ -78,7 +78,7 @@ impl Undo {
 		Ok(())
 	}
 
-	async fn undo_copy(pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)]) -> Result<()> {
+	async fn undo_copy(pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)], overwritten: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)]) -> Result<()> {
 		for (_, dest) in pairs {
 			if provider::remove_file(dest).await.is_ok()
 				|| provider::remove_dir_all(dest).await.is_ok()
@@ -88,11 +88,24 @@ impl Undo {
 				}
 			}
 		}
+		for (original, trash_path) in overwritten {
+			if provider::rename(trash_path, original).await.is_ok() {
+				if let Some((trash_p, trash_n)) = trash_path.pair() {
+					FilesOp::Deleting(trash_p.into(), [trash_n.into()].into()).emit();
+				}
+				if let Some((orig_p, orig_n)) = original.pair() {
+					if let Ok(file) = File::new(original).await {
+						FilesOp::Upserting(orig_p.into(), [(orig_n.into(), file)].into()).emit();
+					}
+				}
+			}
+		}
 		Ok(())
 	}
 
 	async fn undo_move(
 		pairs: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)],
+		overwritten: &[(yazi_shared::url::UrlBuf, yazi_shared::url::UrlBuf)],
 	) -> Result<()> {
 		for (from, to) in pairs {
 			if provider::rename(to, from).await.is_ok() {
@@ -102,6 +115,18 @@ impl Undo {
 				if let Some((from_p, from_n)) = from.pair() {
 					if let Ok(file) = File::new(from).await {
 						FilesOp::Upserting(from_p.into(), [(from_n.into(), file)].into()).emit();
+					}
+				}
+			}
+		}
+		for (original, trash_path) in overwritten {
+			if provider::rename(trash_path, original).await.is_ok() {
+				if let Some((trash_p, trash_n)) = trash_path.pair() {
+					FilesOp::Deleting(trash_p.into(), [trash_n.into()].into()).emit();
+				}
+				if let Some((orig_p, orig_n)) = original.pair() {
+					if let Ok(file) = File::new(original).await {
+						FilesOp::Upserting(orig_p.into(), [(orig_n.into(), file)].into()).emit();
 					}
 				}
 			}
