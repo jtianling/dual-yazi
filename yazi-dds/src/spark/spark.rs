@@ -62,6 +62,7 @@ pub enum Spark<'a> {
 	PaneOnly(yazi_parser::mgr::PaneOnlyOpt),
 	PanePreview(yazi_parser::mgr::PanePreviewOpt),
 	PaneSwitch(yazi_parser::mgr::PaneSwitchOpt),
+	PaneSyncDir(yazi_parser::mgr::PaneSyncDirOpt),
 	Paste(yazi_parser::mgr::PasteOpt),
 	Peek(yazi_parser::mgr::PeekOpt),
 	Quit(yazi_parser::app::QuitOpt),
@@ -89,6 +90,10 @@ pub enum Spark<'a> {
 	ToggleAll(yazi_parser::mgr::ToggleAllOpt),
 	Undo(yazi_parser::mgr::UndoOpt),
 	UndoPush(yazi_parser::mgr::UndoPushOpt),
+	UndoPushCopyOverwritten(yazi_parser::mgr::UndoPushCopyOverwrittenOpt),
+	UndoPushCopyPair(yazi_parser::mgr::UndoPushCopyPairOpt),
+	UndoPushMoveOverwritten(yazi_parser::mgr::UndoPushMoveOverwrittenOpt),
+	UndoPushMovePair(yazi_parser::mgr::UndoPushMovePairOpt),
 	UndoPushTrashPair(yazi_parser::mgr::UndoPushTrashPairOpt),
 	Unyank(yazi_parser::VoidOpt),
 	UpdateFiles(yazi_parser::mgr::UpdateFilesOpt),
@@ -253,6 +258,7 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::PaneOnly(b) => b.into_lua(lua),
 			Self::PanePreview(b) => b.into_lua(lua),
 			Self::PaneSwitch(b) => b.into_lua(lua),
+			Self::PaneSyncDir(b) => b.into_lua(lua),
 			Self::Paste(b) => b.into_lua(lua),
 			Self::Peek(b) => b.into_lua(lua),
 			Self::Quit(b) => b.into_lua(lua),
@@ -280,6 +286,10 @@ impl<'a> IntoLua for Spark<'a> {
 			Self::ToggleAll(b) => b.into_lua(lua),
 			Self::Undo(b) => b.into_lua(lua),
 			Self::UndoPush(b) => b.into_lua(lua),
+			Self::UndoPushCopyOverwritten(b) => b.into_lua(lua),
+			Self::UndoPushCopyPair(b) => b.into_lua(lua),
+			Self::UndoPushMoveOverwritten(b) => b.into_lua(lua),
+			Self::UndoPushMovePair(b) => b.into_lua(lua),
 			Self::UndoPushTrashPair(b) => b.into_lua(lua),
 			Self::Unyank(b) => b.into_lua(lua),
 			Self::UpdateFiles(b) => b.into_lua(lua),
@@ -422,6 +432,7 @@ try_from_spark!(yazi_parser::mgr::PaneFocusOpt, mgr:pane_focus);
 try_from_spark!(yazi_parser::mgr::PaneOnlyOpt, mgr:pane_only);
 try_from_spark!(yazi_parser::mgr::PanePreviewOpt, mgr:pane_preview);
 try_from_spark!(yazi_parser::mgr::PaneSwitchOpt, mgr:pane_switch);
+try_from_spark!(yazi_parser::mgr::PaneSyncDirOpt, mgr:pane_sync_dir);
 try_from_spark!(yazi_parser::mgr::PasteOpt, mgr:paste);
 try_from_spark!(yazi_parser::mgr::PeekOpt, mgr:peek);
 try_from_spark!(yazi_parser::mgr::RemoveOpt, mgr:remove, mgr:remove_do);
@@ -441,6 +452,10 @@ try_from_spark!(yazi_parser::mgr::ToggleAllOpt, mgr:toggle_all);
 try_from_spark!(yazi_parser::mgr::ToggleOpt, mgr:toggle);
 try_from_spark!(yazi_parser::mgr::UndoOpt, mgr:undo);
 try_from_spark!(yazi_parser::mgr::UndoPushOpt, mgr:undo_push);
+try_from_spark!(yazi_parser::mgr::UndoPushCopyOverwrittenOpt, mgr:undo_push_copy_overwritten);
+try_from_spark!(yazi_parser::mgr::UndoPushCopyPairOpt, mgr:undo_push_copy_pair);
+try_from_spark!(yazi_parser::mgr::UndoPushMoveOverwrittenOpt, mgr:undo_push_move_overwritten);
+try_from_spark!(yazi_parser::mgr::UndoPushMovePairOpt, mgr:undo_push_move_pair);
 try_from_spark!(yazi_parser::mgr::UndoPushTrashPairOpt, mgr:undo_push_trash_pair);
 try_from_spark!(yazi_parser::mgr::RedoOpt, mgr:redo);
 try_from_spark!(yazi_parser::mgr::UpdateFilesOpt, mgr:update_files);

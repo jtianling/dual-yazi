@@ -23,6 +23,7 @@ yazi_macro::mod_flat!(
 	pane_only
 	pane_preview
 	pane_switch
+	pane_sync_dir
 	paste
 	peek
 	redo
@@ -43,6 +44,10 @@ yazi_macro::mod_flat!(
 	toggle_all
 	undo
 	undo_push
+	undo_push_copy_overwritten
+	undo_push_copy_pair
+	undo_push_move_overwritten
+	undo_push_move_pair
 	undo_push_trash_pair
 	update_files
 	update_mimes

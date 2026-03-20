@@ -124,6 +124,10 @@ impl<'a> Executor<'a> {
 		on!(rename);
 		on!(undo);
 		on!(undo_push);
+		on!(undo_push_copy_pair);
+		on!(undo_push_move_pair);
+		on!(undo_push_copy_overwritten);
+		on!(undo_push_move_overwritten);
 		on!(undo_push_trash_pair);
 		on!(copy);
 		on!(shell);
@@ -155,6 +159,7 @@ impl<'a> Executor<'a> {
 		on!(pane_focus);
 		on!(pane_only);
 		on!(pane_preview);
+		on!(pane_sync_dir);
 
 		// VFS
 		on!(download);

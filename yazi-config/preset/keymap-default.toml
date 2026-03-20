@@ -63,6 +63,7 @@ keymap = [
 	{ on = [ "<C-w>", "l" ],     run = "pane_focus",         desc = "Focus the right pane" },
 	{ on = [ "<C-w>", "o" ],     run = "pane_only",          desc = "Toggle single/dual pane" },
 	{ on = [ "<C-w>", "p" ],     run = "pane_preview",       desc = "Toggle preview in dual pane" },
+	{ on = "=",                  run = "pane_sync_dir",      desc = "Sync other pane to current directory" },
 
 	# Tabs
 	{ on = "t", run = "tab_create --current", desc = "Create a new tab in CWD" },
@@ -93,7 +94,9 @@ keymap = [
 	{ on = "p",         run = "paste",                       desc = "Paste yanked files" },
 	{ on = "P",         run = "paste --force",               desc = "Paste yanked files (overwrite if the destination exists)" },
 	{ on = "<F5>",      run = "copy_to",                     desc = "Copy selected files to the other pane" },
+	{ on = "<S-F5>",    run = "copy_to --force",             desc = "Copy selected files to the other pane (overwrite)" },
 	{ on = "<F6>",      run = "move_to",                     desc = "Move selected files to the other pane" },
+	{ on = "<S-F6>",    run = "move_to --force",             desc = "Move selected files to the other pane (overwrite)" },
 	{ on = "<F7>",      run = "create",                      desc = "Create a file (ends with / for directories)" },
 	{ on = "<F8>",      run = "remove",                      desc = "Trash selected files" },
 	{ on = "-",         run = "link",                        desc = "Symlink the absolute path of yanked files" },
