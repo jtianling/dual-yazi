@@ -22,10 +22,14 @@ impl Actor for Push {
 		let mut msg = Message::from(opt);
 		msg.timeout += instant - cx.notify.messages.first().map_or(instant, |m| m.instant);
 
-		if cx.notify.messages.iter().all(|m| m != &msg) {
+		if let Some(existing) = cx.notify.messages.iter_mut().find(|m| **m == msg) {
+			existing.instant = msg.instant;
+			existing.timeout = msg.timeout;
+			existing.percent = 0;
+		} else {
 			cx.notify.messages.push(msg);
-			act!(notify:tick, cx)?;
 		}
+		act!(notify:tick, cx)?;
 		succ!();
 	}
 

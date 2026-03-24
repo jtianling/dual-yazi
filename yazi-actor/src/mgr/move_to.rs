@@ -2,6 +2,7 @@ use anyhow::Result;
 use yazi_core::mgr::Yanked;
 use yazi_macro::{act, succ};
 use yazi_parser::mgr::MoveToOpt;
+use yazi_proxy::NotifyProxy;
 use yazi_shared::{UndoOp, data::Data, url::UrlBufCov};
 
 use crate::{Actor, Ctx};
@@ -23,6 +24,10 @@ impl Actor for MoveTo {
 		}
 
 		let dest = cx.tabs().other().cwd().clone();
+
+		if opt.force && cx.tab().cwd() == &dest {
+			succ!(NotifyProxy::push_warn("Move", "Both panes are in the same directory"));
+		}
 
 		cx.core.tasks.file_cut(&yanked, &dest, opt.force);
 		cx.mgr.undo.push(UndoOp::Move { pairs: vec![], overwritten: vec![] });

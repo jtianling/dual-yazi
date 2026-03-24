@@ -39,14 +39,14 @@ impl Scheduler {
 		}
 	}
 
-	pub fn file_cut(&self, from: UrlBuf, to: UrlBuf, force: bool) {
+	pub fn file_cut(&self, from: UrlBuf, to: UrlBuf, force: bool) -> CompletionToken {
 		let mut ongoing = self.ongoing.lock();
 		let task = ongoing.add::<FileProgCut>(format!("Cut {} to {}", from.display(), to.display()));
+		let done = task.done.clone();
 
 		if to.try_starts_with(&from).unwrap_or(false) && !to.covariant(&from) {
-			return self
-				.ops
-				.out(task.id, FileOutCut::Fail("Cannot cut directory into itself".to_owned()));
+			self.ops.out(task.id, FileOutCut::Fail("Cannot cut directory into itself".to_owned()));
+			return done;
 		}
 
 		let follow = !from.scheme().covariant(to.scheme());
@@ -64,16 +64,17 @@ impl Scheduler {
 			},
 			LOW,
 		);
+		done
 	}
 
-	pub fn file_copy(&self, from: UrlBuf, to: UrlBuf, force: bool, follow: bool) {
+	pub fn file_copy(&self, from: UrlBuf, to: UrlBuf, force: bool, follow: bool) -> CompletionToken {
 		let mut ongoing = self.ongoing.lock();
 		let task = ongoing.add::<FileProgCopy>(format!("Copy {} to {}", from.display(), to.display()));
+		let done = task.done.clone();
 
 		if to.try_starts_with(&from).unwrap_or(false) && !to.covariant(&from) {
-			return self
-				.ops
-				.out(task.id, FileOutCopy::Fail("Cannot copy directory into itself".to_owned()));
+			self.ops.out(task.id, FileOutCopy::Fail("Cannot copy directory into itself".to_owned()));
+			return done;
 		}
 
 		let follow = follow || !from.scheme().covariant(to.scheme());
@@ -90,6 +91,7 @@ impl Scheduler {
 			},
 			LOW,
 		);
+		done
 	}
 
 	pub fn file_link(&self, from: UrlBuf, to: UrlBuf, relative: bool, force: bool) {
