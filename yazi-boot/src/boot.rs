@@ -10,6 +10,7 @@ use yazi_vfs::provider;
 pub struct Boot {
 	pub cwds:  Vec<UrlBuf>,
 	pub files: Vec<StrandBuf>,
+	pub dual:  bool,
 
 	pub local_events:  HashSet<String>,
 	pub remote_events: HashSet<String>,
@@ -55,6 +56,12 @@ impl From<&crate::Args> for Boot {
 		let config_dir = Xdg::config_dir();
 		let (cwds, files) = block_on(Self::parse_entries(&args.entries));
 
+		let dual = args.dual
+			|| std::env::args()
+				.next()
+				.and_then(|s| PathBuf::from(s).file_name().map(|n| n.to_os_string()))
+				.is_some_and(|n| n.to_string_lossy().contains("dual"));
+
 		let local_events = args
 			.local_events
 			.as_ref()
@@ -69,6 +76,7 @@ impl From<&crate::Args> for Boot {
 		Self {
 			cwds,
 			files,
+			dual,
 
 			local_events,
 			remote_events,

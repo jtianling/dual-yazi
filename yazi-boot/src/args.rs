@@ -32,6 +32,10 @@ pub struct Args {
 	#[arg(long)]
 	pub remote_events: Option<String>,
 
+	/// Start in dual-pane mode
+	#[arg(long)]
+	pub dual: bool,
+
 	/// Print debug information
 	#[arg(long)]
 	pub debug: bool,

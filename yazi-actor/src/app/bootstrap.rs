@@ -15,6 +15,8 @@ impl Actor for Bootstrap {
 	const NAME: &str = "bootstrap";
 
 	fn act(cx: &mut Ctx, _: Self::Options) -> Result<Data> {
+		cx.tabs_mut().single_pane = !BOOT.dual;
+
 		cx.pane = 0;
 		cx.tab = 0;
 		if let Some(file) = BOOT.files.first() {
